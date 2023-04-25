@@ -8,6 +8,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,7 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.bigbenssignin.keys
 
@@ -28,6 +34,8 @@ fun Home(
             viewModel.authorisationCode.value.length > 10
         }
     }
+
+    DialogInstructionsForRetreivingTokin()
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -79,7 +87,16 @@ fun TokenTextBox(
     token: String,
     updateAuthorisationCode: (String)->Unit
 ) {
-    TextField(value = token, onValueChange ={updateAuthorisationCode(it)} )
+    val focusManager = LocalFocusManager.current
+    TextField(
+        value = token,
+        onValueChange ={updateAuthorisationCode(it)},
+        keyboardActions = KeyboardActions(onDone = {focusManager.clearFocus()}),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        placeholder = { Text(text = "Place your code here!")},
+        maxLines = 1,
+        modifier = Modifier.width(280.dp),
+    )
 }
 
 @Composable
@@ -92,12 +109,30 @@ fun LoginWithTokinUserCollectedFromProcore(sendAuthorisationToProcoreServerForTo
                 .width(280.dp)
                 .height(60.dp)
                 .clickable(enabled = enabled) { sendAuthorisationToProcoreServerForToken() }
-                .background(if (enabled)MaterialTheme.colorScheme.primary else Color.Gray)
+                .background(if (enabled) MaterialTheme.colorScheme.primary else Color.Gray)
                 .padding(8.dp),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically,
         ){
             Text(text = "Login!")
         }
+    }
+}
+
+@Composable
+fun DialogInstructionsForRetreivingTokin() {
+
+    val showdialog = remember {
+        mutableStateOf(true)
+    }
+    if (showdialog.value) {
+        AlertDialog(
+            onDismissRequest = { showdialog.value = false },
+            text = {Text(text = "Gidday thanks for using bens login service, to get set up you need to login to Procore with this app and copy the code Procore gives you. Then paste the code in code box and click login")},
+            confirmButton = {
+                TextButton(onClick = { showdialog.value = false })
+                {Text(text = "Lets Go!") }
+            }
+        )
     }
 }
