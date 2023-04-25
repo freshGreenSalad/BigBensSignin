@@ -14,7 +14,7 @@ class signinRepo @Inject constructor(
     private val client: HttpClient
 ): signinInterface {
     override suspend fun getTokenFromAuthorisationCode(authorisationCode:String):SuccessState<String> {
-        val requestForTokenFromProcore = RequestoForTokenFromProcore(
+        val requestForTokenFromProcore = RequestForTokenFromProcore(
             client_id = keys().client_id,
             client_secret = keys().client_secret,
             code = authorisationCode,
@@ -34,7 +34,7 @@ class signinRepo @Inject constructor(
 }
 
 @kotlinx.serialization.Serializable
-data class RequestoForTokenFromProcore(
+data class RequestForTokenFromProcore(
     val client_id: String,
     val client_secret: String,
     val code: String,
