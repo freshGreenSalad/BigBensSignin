@@ -1,12 +1,9 @@
 package com.example.bigbenssignin.loginui
 
 import android.net.Uri
-import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -20,14 +17,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.bigbenssignin.R
 import com.example.bigbenssignin.keys
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -80,7 +75,6 @@ fun Home(
             )
         }
     }
-
 }
 
 @Composable
@@ -154,8 +148,9 @@ fun DialogInstructionsForRetreivingTokin() {
     }
     if (showdialog.value) {
         AlertDialog(
+            title = {Text(style = MaterialTheme.typography.titleMedium, text = "Welcome!")},
             onDismissRequest = { showdialog.value = false },
-            text = {Text(text = "Gidday thanks for using bens login service, to get set up you need to login to Procore with this app and copy the code Procore gives you. Then paste the code in code box and click login")},
+            text = {Text(text = stringResource(id = R.string.InstrucitonsForLogin))},
             confirmButton = {
                 TextButton(onClick = { showdialog.value = false })
                 {Text(text = "Lets Go!") }
@@ -189,8 +184,11 @@ fun HelpDialogBox(
 ) {
     if (showDialog) {
         AlertDialog(
+            title = {Text(
+                style = MaterialTheme.typography.titleMedium,
+                text = "Login Help")},
             onDismissRequest = { hideDialog() } ,
-            text = {Text(text = "instructions")},
+            text = {Text(text = stringResource(id = R.string.InstrucitonsForLogin))},
             confirmButton = { TextButton(
                 onClick = {hideDialog()},
                 content = {Text("Awesome!")}

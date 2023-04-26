@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">BigBensSignin</string>
+    <string name="InstrucitonsForLogin">
+        Gidday thanks for using Bens login service, to get set up follow these steps:\n
+        \n
+        Login to Procore with this app \n
+        Copy the code Procore gives you \n
+        Paste the code in code box and click login
+    </string>
 </resources>
