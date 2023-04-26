@@ -1,7 +1,7 @@
 package com.example.bigbenssignin.di
 
-import com.example.bigbenssignin.signinRepo.signinInterface
-import com.example.bigbenssignin.signinRepo.signinRepo
+import com.example.bigbenssignin.sharedUi.signinRepo.signinInterface
+import com.example.bigbenssignin.sharedUi.signinRepo.signinRepo
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

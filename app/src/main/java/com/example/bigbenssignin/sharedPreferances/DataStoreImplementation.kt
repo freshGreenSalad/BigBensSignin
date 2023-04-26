@@ -24,4 +24,8 @@ class DataStoreImplementaion @Inject constructor(
             settings[stringPreferencesKey(name = key)] = value
         }
     }
+
+    override suspend fun save(key: String, value: String) {
+        dataStore
+    }
 }

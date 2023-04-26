@@ -6,4 +6,6 @@ interface DatastoreInterface {
     suspend fun read(key: String): String?
 
     suspend fun edit(key:String, value:String)
+
+    suspend fun save(key: String, value: String)
 }

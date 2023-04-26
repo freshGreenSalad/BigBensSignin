@@ -3,11 +3,13 @@ package com.example.bigbenssignin.loginui
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bigbenssignin.SuccessState
 import com.example.bigbenssignin.di.IoDispatcher
-import com.example.bigbenssignin.signinRepo.signinRepo
+import com.example.bigbenssignin.sharedUi.signinRepo.signinRepo
+import com.example.bigbenssignin.tokenRefreshToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
@@ -20,15 +22,13 @@ import javax.inject.Inject
 @HiltViewModel
 class loginViewModel @Inject constructor(
         val signinrepo: signinRepo,
-        @IoDispatcher private val dispatcher: CoroutineDispatcher
+        @IoDispatcher private val dispatcher: CoroutineDispatcher,
 ):ViewModel() {
         val token =  mutableStateOf("")
         val authorisationCode = mutableStateOf("")
 
         private val _channel = Channel<String>()
         val shared = _channel.receiveAsFlow()
-
-
 
         val scope = viewModelScope
 

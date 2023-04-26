@@ -1,8 +1,11 @@
-package com.example.bigbenssignin.signinRepo
+package com.example.bigbenssignin.sharedUi.signinRepo
 
 import android.util.Log
+import androidx.datastore.core.DataStore
 import com.example.bigbenssignin.SuccessState
 import com.example.bigbenssignin.keys
+import com.example.bigbenssignin.sharedPreferances.DataStoreImplementaion
+import com.example.bigbenssignin.tokenRefreshToken
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -13,7 +16,8 @@ import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 class signinRepo @Inject constructor(
-    private val client: HttpClient
+    private val client: HttpClient,
+    val datastore :DataStore<tokenRefreshToken>
 ): signinInterface {
     override suspend fun getTokenFromAuthorisationCode(authorisationCode:String):SuccessState<String> {
         val requestForTokenFromProcore = RequestForTokenFromProcore(
@@ -30,6 +34,9 @@ class signinRepo @Inject constructor(
                 contentType(ContentType.Application.Json)
                 setBody(jsonQuery)
             }.body<returnFromRequestoForTokin>()
+            datastore.updateData { data ->
+                data.copy(token = token.access_token, refreshToken = token.refresh_token )
+            }
             Log.d("json", token.access_token)
             SuccessState.Success(token.access_token)
         }catch (e:Exception){

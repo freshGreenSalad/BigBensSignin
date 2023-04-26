@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.signinRepo
+package com.example.bigbenssignin.sharedUi.signinRepo
 
 import com.example.bigbenssignin.SuccessState
 
