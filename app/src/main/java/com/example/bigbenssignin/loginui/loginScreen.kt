@@ -21,20 +21,25 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.bigbenssignin.R
 import com.example.bigbenssignin.keys
+import com.example.bigbenssignin.navigation.navigationDestenations
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-fun NavGraphBuilder.LoginScreen(){
-    composable("friendslist") {
+fun NavGraphBuilder.LoginScreen(navController: NavController){
+    composable(navigationDestenations.loginRoute) {
         val viewModel = hiltViewModel<loginViewModel>()
         Home(
             authorisationCode = viewModel.authorisationCode,
             onEventFunction = viewModel::onEvent ,
-            LoginFail = viewModel.LoginFailFlow
+            LoginFail = viewModel.LoginFailFlow,
+            navigateToNextScreen =  {navController.navigate(navigationDestenations.SelecteCompany){
+                popUpTo(navigationDestenations.loginRoute){inclusive = true}
+            } }
         )
     }
 }
@@ -44,7 +49,8 @@ fun NavGraphBuilder.LoginScreen(){
 fun Home(
     authorisationCode :State<String>,
     onEventFunction: (onEvent)->Unit,
-    LoginFail : Flow<String>
+    LoginFail : Flow<String>,
+    navigateToNextScreen: ()-> Unit
 ) {
     val state = rememberCoroutineScope()
     val snackbarState = remember{ SnackbarHostState()}
@@ -79,6 +85,7 @@ fun Home(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Button(onClick = { navigateToNextScreen() }) {}
             gotoCustomTabsButton()
             Spacer(modifier = Modifier.height(50.dp))
             TokenTextBox(authorisationCode.value) { code ->
