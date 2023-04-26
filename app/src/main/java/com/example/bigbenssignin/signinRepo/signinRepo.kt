@@ -1,10 +1,12 @@
 package com.example.bigbenssignin.signinRepo
 
+import android.util.Log
 import com.example.bigbenssignin.SuccessState
 import com.example.bigbenssignin.keys
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -21,13 +23,18 @@ class signinRepo @Inject constructor(
             grant_type = "authorization_code",
             redirect_uri = "urn:ietf:wg:oauth:2.0:oob"
         )
+        val jsonQuery = Json.encodeToString(requestForTokenFromProcore)
+        Log.d("json", jsonQuery)
         return try {
-            val token = client.get("https://sandbox.procore.com/oauth/token"){
+            val token = client.post("https://sandbox.procore.com/oauth/token"){
                 contentType(ContentType.Application.Json)
-                setBody(Json.encodeToString(requestForTokenFromProcore))
+                setBody(jsonQuery)
             }.body<returnFromRequestoForTokin>()
+            Log.d("json", token.access_token)
             SuccessState.Success(token.access_token)
         }catch (e:Exception){
+            Log.d("in fail block","")
+
             SuccessState.Failure()
         }
     }

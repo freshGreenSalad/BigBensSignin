@@ -1,6 +1,7 @@
 package com.example.bigbenssignin.loginui
 
 import android.net.Uri
+import android.util.Log
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -18,39 +19,66 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.bigbenssignin.R
 import com.example.bigbenssignin.keys
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(
     viewModel: loginViewModel = hiltViewModel()
 ) {
-    val enabled =  remember(key1 = viewModel.authorisationCode) {
-        derivedStateOf {
-            viewModel.authorisationCode.value.length > 10
+    val state = rememberCoroutineScope()
+    val snackbarState = remember{ SnackbarHostState()}
+
+    remember {
+        state.launch {
+            viewModel.shared.collect {
+                snackbarState.showSnackbar(it)
+            }
         }
     }
 
-    DialogInstructionsForRetreivingTokin()
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        gotoCustomTabsButton()
-        Spacer(modifier = Modifier.height(50.dp))
-        TokenTextBox(viewModel.authorisationCode.value) { code ->
-            (viewModel::onEvent)(onEvent.updateAuthorisationCode(code))
+    val enabled =  remember(key1 = viewModel.authorisationCode) {
+        derivedStateOf {
+            // this is to disable the login button until the text field has text in it
+            viewModel.authorisationCode.value.length > 1
         }
-        Spacer(modifier = Modifier.height(50.dp))
-        LoginWithTokinUserCollectedFromProcore(
-            sendAuthorisationToProcoreServerForToken = { viewModel.onEvent(onEvent.gettokin) },
-            enabled = enabled.value
-        )
+    }
+
+    Scaffold(
+        snackbarHost = {
+            SnackbarHost(hostState = snackbarState)
+        }
+    ) {paddingValues ->
+        helpDialog()
+        DialogInstructionsForRetreivingTokin()
+        Column(
+            modifier = Modifier
+
+                .fillMaxSize()
+                .padding(paddingValues),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            gotoCustomTabsButton()
+            Spacer(modifier = Modifier.height(50.dp))
+            TokenTextBox(viewModel.authorisationCode.value) { code ->
+                (viewModel::onEvent)(onEvent.updateAuthorisationCode(code))
+            }
+            Spacer(modifier = Modifier.height(50.dp))
+            LoginWithTokinUserCollectedFromProcore(
+                sendAuthorisationToProcoreServerForToken = { viewModel.onEvent(onEvent.gettokin) },
+                enabled = enabled.value
+            )
+        }
     }
 
 }
@@ -121,7 +149,6 @@ fun LoginWithTokinUserCollectedFromProcore(sendAuthorisationToProcoreServerForTo
 
 @Composable
 fun DialogInstructionsForRetreivingTokin() {
-
     val showdialog = remember {
         mutableStateOf(true)
     }
@@ -133,6 +160,41 @@ fun DialogInstructionsForRetreivingTokin() {
                 TextButton(onClick = { showdialog.value = false })
                 {Text(text = "Lets Go!") }
             }
+        )
+    }
+}
+
+@Composable
+fun helpDialog() {
+    val showDialog = remember {mutableStateOf(false) }
+    HelpDialogBox(showDialog = showDialog.value, hideDialog = { showDialog.value = false} )
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .height(60.dp), horizontalArrangement = Arrangement.End) {
+        Icon(
+            modifier = Modifier
+                .padding(16.dp)
+                .clickable { showDialog.value = true },
+            painter = painterResource(id = R.drawable.help),
+            contentDescription = "Help Button"
+        )
+    }
+}
+
+@Composable
+fun HelpDialogBox(
+    showDialog: Boolean,
+    hideDialog: ()-> Unit
+) {
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { hideDialog() } ,
+            text = {Text(text = "instructions")},
+            confirmButton = { TextButton(
+                onClick = {hideDialog()},
+                content = {Text("Awesome!")}
+            )}
         )
     }
 }
