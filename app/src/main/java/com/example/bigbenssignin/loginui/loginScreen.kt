@@ -21,30 +21,46 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 import com.example.bigbenssignin.R
 import com.example.bigbenssignin.keys
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
+
+fun NavGraphBuilder.LoginScreen(){
+    composable("friendslist") {
+        val viewModel = hiltViewModel<loginViewModel>()
+        Home(
+            authorisationCode = viewModel.authorisationCode,
+            onEventFunction = viewModel::onEvent ,
+            LoginFail = viewModel.LoginFailFlow
+        )
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Home(
-    viewModel: loginViewModel = hiltViewModel()
+    authorisationCode :State<String>,
+    onEventFunction: (onEvent)->Unit,
+    LoginFail : Flow<String>
 ) {
     val state = rememberCoroutineScope()
     val snackbarState = remember{ SnackbarHostState()}
 
     remember {
         state.launch {
-            viewModel.shared.collect {
+            LoginFail.collect {
                 snackbarState.showSnackbar(it)
             }
         }
     }
 
-    val enabled =  remember(key1 = viewModel.authorisationCode) {
+    val enabled =  remember(key1 = authorisationCode) {
         derivedStateOf {
             // this is to disable the login button until the text field has text in it
-            viewModel.authorisationCode.value.length > 1
+            authorisationCode.value.length > 1
         }
     }
 
@@ -65,12 +81,12 @@ fun Home(
         ) {
             gotoCustomTabsButton()
             Spacer(modifier = Modifier.height(50.dp))
-            TokenTextBox(viewModel.authorisationCode.value) { code ->
-                (viewModel::onEvent)(onEvent.updateAuthorisationCode(code))
+            TokenTextBox(authorisationCode.value) { code ->
+                (onEventFunction)(onEvent.updateAuthorisationCode(code))
             }
             Spacer(modifier = Modifier.height(50.dp))
             LoginWithTokinUserCollectedFromProcore(
-                sendAuthorisationToProcoreServerForToken = { viewModel.onEvent(onEvent.gettokin) },
+                sendAuthorisationToProcoreServerForToken = { onEventFunction(onEvent.gettokin) },
                 enabled = enabled.value
             )
         }

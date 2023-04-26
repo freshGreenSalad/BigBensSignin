@@ -2,20 +2,15 @@ package com.example.bigbenssignin.loginui
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bigbenssignin.SuccessState
 import com.example.bigbenssignin.di.IoDispatcher
 import com.example.bigbenssignin.sharedUi.signinRepo.signinRepo
-import com.example.bigbenssignin.tokenRefreshToken
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -28,7 +23,7 @@ class loginViewModel @Inject constructor(
         val authorisationCode = mutableStateOf("")
 
         private val _channel = Channel<String>()
-        val shared = _channel.receiveAsFlow()
+        val LoginFailFlow = _channel.receiveAsFlow()
 
         val scope = viewModelScope
 

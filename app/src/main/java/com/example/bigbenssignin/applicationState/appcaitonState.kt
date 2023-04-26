@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.bigbenssignin.internetConnection.ConnectivityObserver
 import com.example.bigbenssignin.loginui.Home
+import com.example.bigbenssignin.navigation.navigaiton
 
 @Composable
 fun ApplictionState(
@@ -22,8 +23,7 @@ fun ApplictionState(
     Crossfade(targetState = networkstate.value, animationSpec = tween(1000)) { networkStateAnim ->
         when (networkStateAnim){
             ConnectivityObserver.Status.Available -> {
-                Home()
-                // TODO: put another composabel here which holds the state of the back stack this is not proper as it is
+                navigaiton()
             }
             ConnectivityObserver.Status.Unavailable -> {
                 NetworkLoading()
