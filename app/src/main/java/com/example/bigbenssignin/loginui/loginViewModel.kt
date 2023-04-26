@@ -19,7 +19,9 @@ class loginViewModel @Inject constructor(
         val signinrepo: signinRepo,
         @IoDispatcher private val dispatcher: CoroutineDispatcher,
 ):ViewModel() {
-        val token =  mutableStateOf("")
+        private val _successState =  Channel<SuccessState<Unit>>()
+        val successState = _successState.receiveAsFlow()
+
         val authorisationCode = mutableStateOf("")
 
         private val _channel = Channel<String>()
@@ -32,15 +34,20 @@ class loginViewModel @Inject constructor(
                         is onEvent.gettokin -> {
                                 scope.launch(dispatcher){
                                         val result = signinrepo.getTokenFromAuthorisationCode(
-                                                 authorisationCode.value
+                                                authorisationCode.value
                                         )
-                                        if (result == SuccessState.Success<String>()){
-                                                token.value = result.data.orEmpty()
-                                        }
-                                        else {
-                                                Log.d("in the else block", "in the else block")
-                                                _channel.send("Your token did not work, it may have timed out")
+                                        Log.d("", result.toString())
 
+                                        when (result){
+                                                is SuccessState.Success<String> ->{
+                                                        _successState.send( SuccessState.Success())
+                                                }
+                                                is SuccessState.Failure<String> ->{
+
+                                                        _successState.send( SuccessState.Failure())
+                                                        Log.d("in the else block", "in the else block")
+                                                        _channel.send("Your token did not work, it may have timed out")
+                                                }
                                         }
                                 }
                         }

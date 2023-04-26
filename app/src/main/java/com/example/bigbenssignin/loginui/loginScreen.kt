@@ -21,10 +21,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.bigbenssignin.R
+import com.example.bigbenssignin.SuccessState
 import com.example.bigbenssignin.keys
 import com.example.bigbenssignin.navigation.navigationDestenations
 import kotlinx.coroutines.flow.Flow
@@ -39,7 +41,8 @@ fun NavGraphBuilder.LoginScreen(navController: NavController){
             LoginFail = viewModel.LoginFailFlow,
             navigateToNextScreen =  {navController.navigate(navigationDestenations.SelecteCompany){
                 popUpTo(navigationDestenations.loginRoute){inclusive = true}
-            } }
+            } },
+            viewModel.successState
         )
     }
 }
@@ -50,10 +53,24 @@ fun Home(
     authorisationCode :State<String>,
     onEventFunction: (onEvent)->Unit,
     LoginFail : Flow<String>,
-    navigateToNextScreen: ()-> Unit
+    navigateToNextScreen: ()-> Unit,
+    successState: Flow<SuccessState<Unit>>
 ) {
     val state = rememberCoroutineScope()
     val snackbarState = remember{ SnackbarHostState()}
+
+    LaunchedEffect(successState){
+        successState.collect{successFlow ->
+            when (successFlow){
+                is SuccessState.Failure -> {
+
+                }
+                is SuccessState.Success -> {
+                navigateToNextScreen()
+                }
+            }
+        }
+    }
 
     remember {
         state.launch {
