@@ -56,7 +56,8 @@ fun GotoCustomTabsButton() {
                 )
                 Icon(
                     painter = painterResource(id = R.drawable.construction),
-                    contentDescription = stringResource( R.string.ConstructionIconDescription)
+                    contentDescription = stringResource( R.string.ConstructionIconDescription),
+                    tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
         }

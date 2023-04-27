@@ -1,10 +1,11 @@
 package com.example.bigbenssignin.features.loginToProcoreFeature.data
 
-import android.util.Log
 import androidx.datastore.core.DataStore
 import com.example.bigbenssignin.SuccessState
 import com.example.bigbenssignin.keys
 import com.example.bigbenssignin.features.loginToProcoreFeature.domain.SigninInterface
+import com.example.bigbenssignin.features.loginToProcoreFeature.domain.models.RequestForTokenFromProcore
+import com.example.bigbenssignin.features.loginToProcoreFeature.domain.models.ReturnFromRequestForToken
 import com.example.bigbenssignin.tokenRefreshToken
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -14,52 +15,53 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
-class signinRepo @Inject constructor(
+class SigninRepository @Inject constructor(
     private val client: HttpClient,
     val datastore :DataStore<tokenRefreshToken>
 ): SigninInterface {
-    override suspend fun getTokenFromAuthorisationCode(authorisationCode:String):SuccessState<String> {
-        val requestForTokenFromProcore = RequestForTokenFromProcore(
-            client_id = keys().client_id,
-            client_secret = keys().client_secret,
-            code = authorisationCode,
-            grant_type = "authorization_code",
-            redirect_uri = "urn:ietf:wg:oauth:2.0:oob"
+    override suspend fun tradeAuthorisationCodeForTokenWithProcore(authorisationCode: String): SuccessState<String> {
+        val jsonQuery = Json.encodeToString(
+            RequestForTokenFromProcore(
+                client_id = keys().client_id,
+                client_secret = keys().client_secret,
+                code = authorisationCode,
+                grant_type = "authorization_code",
+                redirect_uri = "urn:ietf:wg:oauth:2.0:oob"
+            )
         )
-        val jsonQuery = Json.encodeToString(requestForTokenFromProcore)
-        Log.d("json", jsonQuery)
-        return try {
-            val token = client.post("https://sandbox.procore.com/oauth/token"){
-                contentType(ContentType.Application.Json)
-                setBody(jsonQuery)
-            }.body<returnFromRequestoForTokin>()
-            datastore.updateData { data ->
-                data.copy(token = token.access_token, refreshToken = token.refresh_token )
-            }
-            Log.d("json", token.access_token)
+        return httpRequestForTokenWithProcore(client, jsonQuery, datastore)
+    }
+    private suspend fun httpRequestForTokenWithProcore(
+        client: HttpClient,
+        jsonQuery: String,
+        datastore: DataStore<tokenRefreshToken>
+    ) =
+        try {
+            val token = httpRequestForTokenWithProcore(client, jsonQuery)
+            addTokenToDataStore(token, datastore)
             SuccessState.Success(token.access_token)
-        }catch (e:Exception){
-            Log.d("in fail block","")
+        } catch (e: Exception) {
+            SuccessState.Failure("failed to get token with the authorisation code from Procore")
+        }
 
-            SuccessState.Failure()
+    private suspend fun httpRequestForTokenWithProcore(
+        client: HttpClient,
+        jsonQuery: String
+    ): ReturnFromRequestForToken =
+        client.post("https://sandbox.procore.com/oauth/token") {
+            contentType(ContentType.Application.Json)
+            setBody(jsonQuery)
+        }.body()
+
+    private suspend fun addTokenToDataStore(
+        token: ReturnFromRequestForToken,
+        datastore: DataStore<tokenRefreshToken>
+    ) {
+        datastore.updateData { data ->
+            data.copy(token = token.access_token, refreshToken = token.refresh_token)
         }
     }
 }
 
-@kotlinx.serialization.Serializable
-data class RequestForTokenFromProcore(
-    val client_id: String,
-    val client_secret: String,
-    val code: String,
-    val grant_type: String,
-    val redirect_uri: String
-)
 
-@kotlinx.serialization.Serializable
-data class returnFromRequestoForTokin(
-    val access_token: String,
-    val created_at: Int,
-    val expires_in: Int,
-    val refresh_token: String,
-    val token_type: String
-)
+

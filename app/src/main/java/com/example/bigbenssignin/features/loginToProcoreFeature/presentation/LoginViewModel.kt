@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bigbenssignin.SuccessState
 import com.example.bigbenssignin.DependencyInjection.IoDispatcher
-import com.example.bigbenssignin.features.loginToProcoreFeature.data.signinRepo
+import com.example.bigbenssignin.features.loginToProcoreFeature.data.SigninRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-        private val signinRepository: signinRepo,
+        private val signinRepository: SigninRepository,
         @IoDispatcher private val dispatcher: CoroutineDispatcher,
 ):ViewModel() {
         private val scope = viewModelScope
@@ -32,7 +32,7 @@ class LoginViewModel @Inject constructor(
                 when (event){
                         is OnEventLogin.GetToken -> {
                                 scope.launch(dispatcher){
-                                        val result = signinRepository.getTokenFromAuthorisationCode(
+                                        val result = signinRepository.tradeAuthorisationCodeForTokenWithProcore(
                                                 authorisationCode.value
                                         )
                                         when (result){
