@@ -1,8 +1,8 @@
-package com.example.bigbenssignin.Features.ChooseCompanyFeature.data
+package com.example.bigbenssignin.features.chooseCompanyFeature.data
 
 import android.util.Log
 import androidx.datastore.core.DataStore
-import com.example.bigbenssignin.Features.ChooseCompanyFeature.Domain.choseCompanyInterface
+import com.example.bigbenssignin.features.chooseCompanyFeature.domain.choseCompanyInterface
 import com.example.bigbenssignin.ChooseCompanyFeature.ListOfCompaniesItem
 import com.example.bigbenssignin.tokenRefreshToken
 import io.ktor.client.*
@@ -11,7 +11,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import javax.inject.Inject
 
-class ChoseCompanyImplementation @Inject constructor(
+class ChooseCompanyImplementation @Inject constructor(
     private val client: HttpClient,
     val datastore : DataStore<tokenRefreshToken>
 ): choseCompanyInterface {

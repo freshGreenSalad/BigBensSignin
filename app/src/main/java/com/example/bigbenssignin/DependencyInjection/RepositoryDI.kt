@@ -1,9 +1,9 @@
 package com.example.bigbenssignin.DependencyInjection
 
-import com.example.bigbenssignin.Features.ChooseCompanyFeature.data.ChoseCompanyImplementation
-import com.example.bigbenssignin.Features.ChooseCompanyFeature.Domain.choseCompanyInterface
-import com.example.bigbenssignin.Features.LoginToProcoreFeature.Domain.signinInterface
-import com.example.bigbenssignin.Features.LoginToProcoreFeature.Data.signinRepo
+import com.example.bigbenssignin.features.chooseCompanyFeature.data.ChooseCompanyImplementation
+import com.example.bigbenssignin.features.chooseCompanyFeature.domain.choseCompanyInterface
+import com.example.bigbenssignin.features.loginToProcoreFeature.domain.SigninInterface
+import com.example.bigbenssignin.features.loginToProcoreFeature.data.signinRepo
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -14,9 +14,9 @@ import dagger.hilt.components.SingletonComponent
 interface RepositoryDI {
 
     @Binds
-    fun provideSignInRepository(signinRepo: signinRepo): signinInterface
+    fun provideSignInRepository(signinRepo: signinRepo): SigninInterface
 
     @Binds
-    fun provideChooseCompanyProjectRepository(signinRepo: ChoseCompanyImplementation): choseCompanyInterface
+    fun provideChooseCompanyProjectRepository(signinRepo: ChooseCompanyImplementation): choseCompanyInterface
 
 }

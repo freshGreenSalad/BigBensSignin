@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.Features.LoginToProcoreFeature.Presentation
+package com.example.bigbenssignin.features.loginToProcoreFeature.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -8,16 +8,15 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.bigbenssignin.Common.Presentaiton.navigationDestenations
 import com.example.bigbenssignin.SuccessState
-import com.example.bigbenssignin.loginui.LoginToProCoreScaffold
 import kotlinx.coroutines.flow.Flow
 
 fun NavGraphBuilder.LoginScreen(navController: NavController){
     composable(navigationDestenations.loginRoute) {
-        val viewModel = hiltViewModel<loginViewModel>()
-        LoginToProCoreScaffold(
+        val viewModel = hiltViewModel<LoginViewModel>()
+        LoginToProCore(
             authorisationCode = viewModel.authorisationCode,
             onEventFunction = viewModel::onEvent ,
-            LoginFail = viewModel.LoginFailFlow,
+            LoginFail = viewModel.loginFailFlow,
             navigateToNextScreen =  {navController.navigate(navigationDestenations.SelecteCompany){
                 popUpTo(navigationDestenations.loginRoute){inclusive = true}
             } },

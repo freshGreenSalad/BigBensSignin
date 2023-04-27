@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.Features.ChooseCompanyFeature.Domain
+package com.example.bigbenssignin.features.chooseCompanyFeature.domain
 
 import com.example.bigbenssignin.ChooseCompanyFeature.ListOfCompaniesItem
 

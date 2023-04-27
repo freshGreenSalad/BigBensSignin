@@ -3,8 +3,8 @@ package com.example.bigbenssignin.ChooseCompanyFeature
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bigbenssignin.Features.ChooseCompanyFeature.Domain.choseCompanyInterface
-import com.example.bigbenssignin.Features.ChooseCompanyFeature.presentation.ChoseCompanyProjectEvent
+import com.example.bigbenssignin.features.chooseCompanyFeature.domain.choseCompanyInterface
+import com.example.bigbenssignin.features.chooseCompanyFeature.presentation.ChooseCompanyProjectEvent
 import com.example.bigbenssignin.DependencyInjection.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -29,10 +29,10 @@ class chooseCompanyProjectViewModel @Inject constructor(
         }
     }
 
-    fun choseCompanyProject(event: ChoseCompanyProjectEvent){
+    fun choseCompanyProject(event: ChooseCompanyProjectEvent){
         when(event){
-            is ChoseCompanyProjectEvent.choseCompany -> {}
-            is ChoseCompanyProjectEvent.choseProject -> {}
+            is ChooseCompanyProjectEvent.choseCompany -> {}
+            is ChooseCompanyProjectEvent.choseProject -> {}
         }
     }
 }

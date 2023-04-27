@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.Features.LoginToProcoreFeature.Presentation
+package com.example.bigbenssignin.features.loginToProcoreFeature.presentation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -14,7 +14,7 @@ import com.example.bigbenssignin.R
 
 
 @Composable
-fun helpDialog() {
+fun HelpDialog() {
     val showDialog = remember { mutableStateOf(false) }
     HelpDialogBox(showDialog = showDialog.value, hideDialog = { showDialog.value = false} )
     Row(
@@ -26,7 +26,7 @@ fun helpDialog() {
                 .padding(16.dp)
                 .clickable { showDialog.value = true },
             painter = painterResource(id = R.drawable.help),
-            contentDescription = "Help Button"
+            contentDescription = stringResource(R.string.helpButton)
         )
     }
 }
@@ -41,13 +41,14 @@ fun HelpDialogBox(
             title = {
                 Text(
                 style = MaterialTheme.typography.titleMedium,
-                text = "Login Help")
+                text = stringResource(R.string.LoginHelp)
+                )
             },
             onDismissRequest = { hideDialog() } ,
             text = { Text(text = stringResource(id = R.string.InstrucitonsForLogin)) },
             confirmButton = { TextButton(
                 onClick = {hideDialog()},
-                content = { Text("Awesome!") }
+                content = { Text(stringResource(R.string.Awesome)) }
             )
             }
         )
@@ -55,18 +56,18 @@ fun HelpDialogBox(
 }
 
 @Composable
-fun DialogInstructionsForRetreivingTokin() {
-    val showdialog = remember {
+fun DialogInstructionsForRetrievingToken() {
+    val showDialog = remember {
         mutableStateOf(true)
     }
-    if (showdialog.value) {
+    if (showDialog.value) {
         AlertDialog(
-            title = {Text(style = MaterialTheme.typography.titleMedium, text = "Welcome!")},
-            onDismissRequest = { showdialog.value = false },
+            title = {Text(style = MaterialTheme.typography.titleMedium, text = stringResource(R.string.welcome))},
+            onDismissRequest = { showDialog.value = false },
             text = {Text(text = stringResource(id = R.string.InstrucitonsForLogin))},
             confirmButton = {
-                TextButton(onClick = { showdialog.value = false })
-                {Text(text = "Lets Go!") }
+                TextButton(onClick = { showDialog.value = false })
+                {Text(text = stringResource(R.string.LetsGo)) }
             }
         )
     }

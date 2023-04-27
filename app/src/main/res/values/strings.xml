@@ -7,4 +7,12 @@
         Copy the code Procore gives you \n
         Paste the code in code box and click login
     </string>
+    <string name="welcome">Welcome!</string>
+    <string name="LetsGo">Lets Go!</string>
+    <string name="Awesome">Awesome!</string>
+    <string name="LoginHelp">Login Help</string>
+    <string name="helpButton">Help Button</string>
+    <string name="LoginToProcore">Login To Procore</string>
+    <string name="loginToBigBenApp">Login to big bens signin app!</string>
+    <string name="ConstructionIconDescription">Icon with construction tools</string>
 </resources>

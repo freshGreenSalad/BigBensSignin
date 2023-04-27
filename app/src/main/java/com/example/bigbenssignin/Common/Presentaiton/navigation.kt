@@ -5,7 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.bigbenssignin.Common.Presentaiton.navigationDestenations
 import com.example.bigbenssignin.ChooseCompanyFeature.ChooseCompanyProject
-import com.example.bigbenssignin.Features.LoginToProcoreFeature.Presentation.LoginScreen
+import com.example.bigbenssignin.features.loginToProcoreFeature.presentation.LoginScreen
 
 @Composable
 fun navigaiton() {
