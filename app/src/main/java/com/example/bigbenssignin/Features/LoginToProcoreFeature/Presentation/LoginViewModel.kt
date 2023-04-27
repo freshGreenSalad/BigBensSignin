@@ -1,0 +1,60 @@
+package com.example.bigbenssignin.Features.LoginToProcoreFeature.Presentation
+
+import android.util.Log
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.example.bigbenssignin.SuccessState
+import com.example.bigbenssignin.DependencyInjection.IoDispatcher
+import com.example.bigbenssignin.Features.LoginToProcoreFeature.Data.signinRepo
+import com.example.bigbenssignin.loginui.onEvent
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class loginViewModel @Inject constructor(
+        val signinrepo: signinRepo,
+        @IoDispatcher private val dispatcher: CoroutineDispatcher,
+):ViewModel() {
+        private val _successState =  Channel<SuccessState<Unit>>()
+        val successState = _successState.receiveAsFlow()
+
+        val authorisationCode = mutableStateOf("")
+
+        private val _channel = Channel<String>()
+        val LoginFailFlow = _channel.receiveAsFlow()
+
+        val scope = viewModelScope
+
+        fun onEvent(event: onEvent){
+                when (event){
+                        is onEvent.gettokin -> {
+                                scope.launch(dispatcher){
+                                        val result = signinrepo.getTokenFromAuthorisationCode(
+                                                authorisationCode.value
+                                        )
+                                        Log.d("", result.toString())
+
+                                        when (result){
+                                                is SuccessState.Success<String> ->{
+                                                        _successState.send( SuccessState.Success())
+                                                }
+                                                is SuccessState.Failure<String> ->{
+
+                                                        _successState.send( SuccessState.Failure())
+                                                        Log.d("in the else block", "in the else block")
+                                                        _channel.send("Your token did not work, it may have timed out")
+                                                }
+                                        }
+                                }
+                        }
+                        is onEvent.updateAuthorisationCode -> {
+                                authorisationCode.value = event.AuthorisationCode
+                        }
+                }
+        }
+}
