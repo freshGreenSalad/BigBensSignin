@@ -11,18 +11,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.bigbenssignin.app.internetConnection.ConnectivityObserver
-import com.example.bigbenssignin.navigation.navigaiton
+import com.example.bigbenssignin.common.presentaiton.Navigation
 
 @Composable
-fun ApplictionState(
+fun ApplicationState(
     viewModel: StateViewModel = hiltViewModel()
 ) {
-    val networkstate = viewModel.networkState.collectAsState(initial = ConnectivityObserver.Status.Unavailable)
+    val networkState = viewModel.networkState.collectAsState(initial = ConnectivityObserver.Status.Unavailable)
 
-    Crossfade(targetState = networkstate.value, animationSpec = tween(1000)) { networkStateAnim ->
+    Crossfade(targetState = networkState.value, animationSpec = tween(1000)) { networkStateAnim ->
         when (networkStateAnim){
             ConnectivityObserver.Status.Available -> {
-                navigaiton()
+                Navigation()
             }
             ConnectivityObserver.Status.Unavailable -> {
                 NetworkLoading()

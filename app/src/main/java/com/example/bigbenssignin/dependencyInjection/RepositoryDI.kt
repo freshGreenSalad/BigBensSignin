@@ -1,7 +1,7 @@
-package com.example.bigbenssignin.DependencyInjection
+package com.example.bigbenssignin.dependencyInjection
 
 import com.example.bigbenssignin.features.chooseCompanyFeature.data.ChooseCompanyImplementation
-import com.example.bigbenssignin.features.chooseCompanyFeature.domain.choseCompanyInterface
+import com.example.bigbenssignin.features.chooseCompanyFeature.domain.ChooseCompanyRepositoryInterface
 import com.example.bigbenssignin.features.loginToProcoreFeature.domain.SigninInterface
 import com.example.bigbenssignin.features.loginToProcoreFeature.data.SigninRepository
 import dagger.Binds
@@ -17,6 +17,6 @@ interface RepositoryDI {
     fun provideSignInRepository(signinRepo: SigninRepository): SigninInterface
 
     @Binds
-    fun provideChooseCompanyProjectRepository(signinRepo: ChooseCompanyImplementation): choseCompanyInterface
+    fun provideChooseCompanyProjectRepository(signinRepo: ChooseCompanyImplementation): ChooseCompanyRepositoryInterface
 
 }

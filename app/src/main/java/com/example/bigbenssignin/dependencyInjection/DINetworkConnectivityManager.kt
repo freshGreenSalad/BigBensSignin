@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.DependencyInjection
+package com.example.bigbenssignin.dependencyInjection
 
 import android.content.Context
 import com.example.bigbenssignin.app.internetConnection.NetworkConnectivityObserver
@@ -14,5 +14,5 @@ import dagger.hilt.components.SingletonComponent
 object DINetworkConnectivityManager {
 
     @Provides
-    fun providenetworkConnectivityManager(@ApplicationContext context: Context): NetworkConnectivityObserver = NetworkConnectivityObserver(context)
+    fun provideNetworkConnectivityManager(@ApplicationContext context: Context): NetworkConnectivityObserver = NetworkConnectivityObserver(context)
 }

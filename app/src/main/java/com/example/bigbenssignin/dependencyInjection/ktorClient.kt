@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.DependencyInjection
+package com.example.bigbenssignin.dependencyInjection
 
 import dagger.Module
 import dagger.Provides
@@ -15,7 +15,7 @@ import javax.inject.Singleton
 object EngineModule {
     @Provides
     @Singleton
-    fun provideKtorEngine() : HttpClient = HttpClient(){
+    fun provideKtorEngine() : HttpClient = HttpClient{
         install(ContentNegotiation) {
             json(Json {
                 prettyPrint = true

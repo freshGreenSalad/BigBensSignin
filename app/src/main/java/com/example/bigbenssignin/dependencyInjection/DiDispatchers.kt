@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.DependencyInjection
+package com.example.bigbenssignin.dependencyInjection
 
 import dagger.Module
 import dagger.Provides

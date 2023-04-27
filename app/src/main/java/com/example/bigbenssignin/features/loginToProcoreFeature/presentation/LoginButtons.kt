@@ -18,7 +18,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.bigbenssignin.R
-import com.example.bigbenssignin.keys
+import com.example.bigbenssignin.common.data.ApiKeys
 
 @Composable
 fun LoginWithTokenUserCollectedFromProcore(sendAuthorisationToProcoreServerForToken: ()->Unit, enableLoginButton: Boolean )
@@ -38,7 +38,7 @@ fun LoginWithTokenUserCollectedFromProcore(sendAuthorisationToProcoreServerForTo
 fun GotoCustomTabsButton() {
     val context = LocalContext.current
     val url = "https://sandbox.procore.com/oauth/authorize?response_type=code&client_id=" +
-            keys().client_id +
+            ApiKeys().clientId +
             "&redirect_uri=urn:ietf:wg:oauth:2.0:oob"
     val  builder = CustomTabsIntent.Builder()
     val customTabsIntent = builder.build()

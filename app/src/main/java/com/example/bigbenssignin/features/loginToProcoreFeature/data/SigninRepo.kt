@@ -1,12 +1,13 @@
 package com.example.bigbenssignin.features.loginToProcoreFeature.data
 
+import android.util.Log
 import androidx.datastore.core.DataStore
-import com.example.bigbenssignin.SuccessState
-import com.example.bigbenssignin.keys
+import com.example.bigbenssignin.common.Domain.models.SuccessState
+import com.example.bigbenssignin.common.data.ApiKeys
 import com.example.bigbenssignin.features.loginToProcoreFeature.domain.SigninInterface
 import com.example.bigbenssignin.features.loginToProcoreFeature.domain.models.RequestForTokenFromProcore
 import com.example.bigbenssignin.features.loginToProcoreFeature.domain.models.ReturnFromRequestForToken
-import com.example.bigbenssignin.tokenRefreshToken
+import com.example.bigbenssignin.common.data.dataStore.TokenAndRefreshToken
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -17,13 +18,13 @@ import javax.inject.Inject
 
 class SigninRepository @Inject constructor(
     private val client: HttpClient,
-    val datastore :DataStore<tokenRefreshToken>
+    val datastore :DataStore<TokenAndRefreshToken>
 ): SigninInterface {
     override suspend fun tradeAuthorisationCodeForTokenWithProcore(authorisationCode: String): SuccessState<String> {
         val jsonQuery = Json.encodeToString(
             RequestForTokenFromProcore(
-                client_id = keys().client_id,
-                client_secret = keys().client_secret,
+                client_id = ApiKeys().clientId,
+                client_secret = ApiKeys().clientSecret,
                 code = authorisationCode,
                 grant_type = "authorization_code",
                 redirect_uri = "urn:ietf:wg:oauth:2.0:oob"
@@ -34,15 +35,15 @@ class SigninRepository @Inject constructor(
     private suspend fun httpRequestForTokenWithProcore(
         client: HttpClient,
         jsonQuery: String,
-        datastore: DataStore<tokenRefreshToken>
-    ) =
-        try {
-            val token = httpRequestForTokenWithProcore(client, jsonQuery)
-            addTokenToDataStore(token, datastore)
-            SuccessState.Success(token.access_token)
-        } catch (e: Exception) {
-            SuccessState.Failure("failed to get token with the authorisation code from Procore")
-        }
+        datastore: DataStore<TokenAndRefreshToken>
+    ) = try {
+        val token = httpRequestForTokenWithProcore(client, jsonQuery)
+        addTokenToDataStore(token, datastore)
+        SuccessState.Success(token.access_token)
+    } catch (e: Exception) {
+        Log.d("", e.stackTraceToString())
+        SuccessState.Failure("failed to get token with the authorisation code from Procore")
+    }
 
     private suspend fun httpRequestForTokenWithProcore(
         client: HttpClient,
@@ -55,7 +56,7 @@ class SigninRepository @Inject constructor(
 
     private suspend fun addTokenToDataStore(
         token: ReturnFromRequestForToken,
-        datastore: DataStore<tokenRefreshToken>
+        datastore: DataStore<TokenAndRefreshToken>
     ) {
         datastore.updateData { data ->
             data.copy(token = token.access_token, refreshToken = token.refresh_token)

@@ -1,25 +1,31 @@
-package com.example.bigbenssignin.ChooseCompanyFeature
+package com.example.bigbenssignin.features.chooseCompanyFeature.presentation
 
-import androidx.compose.material3.Text
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.example.bigbenssignin.Common.Presentaiton.navigationDestenations
+import com.example.bigbenssignin.common.presentaiton.NavigationDestinations
+import com.example.bigbenssignin.features.chooseCompanyFeature.domain.models.Companies
 
-
-fun NavGraphBuilder.ChooseCompanyProject(navController: NavController){
-    composable(navigationDestenations.SelecteCompany) {
-        val viewModel: chooseCompanyProjectViewModel = hiltViewModel()
-        ChooseCompany(navController, viewModel)
+fun NavGraphBuilder.chooseCompanyProject(navController: NavController){
+    composable(NavigationDestinations.SelectCompany) {
+        val viewModel: ChooseCompanyProjectViewModel = hiltViewModel()
+        ChooseCompany(navController, viewModel.companiesList.value, )
     }
 }
 
 @Composable
 fun ChooseCompany(
     navController: NavController,
-    viewModel:chooseCompanyProjectViewModel
+    listCompanies: List<Companies>
 ) {
-    Text(viewModel.companysList.value.toString())
+
+    LazyColumn(){
+        items(listCompanies){
+
+        }
+    }
 }

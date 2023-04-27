@@ -6,19 +6,19 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.example.bigbenssignin.Common.Presentaiton.navigationDestenations
-import com.example.bigbenssignin.SuccessState
+import com.example.bigbenssignin.common.presentaiton.NavigationDestinations
+import com.example.bigbenssignin.common.Domain.models.SuccessState
 import kotlinx.coroutines.flow.Flow
 
 fun NavGraphBuilder.LoginScreen(navController: NavController){
-    composable(navigationDestenations.loginRoute) {
+    composable(NavigationDestinations.loginRoute) {
         val viewModel = hiltViewModel<LoginViewModel>()
         LoginToProCore(
             authorisationCode = viewModel.authorisationCode,
             onEventFunction = viewModel::onEvent ,
             LoginFail = viewModel.loginFailFlow,
-            navigateToNextScreen =  {navController.navigate(navigationDestenations.SelecteCompany){
-                popUpTo(navigationDestenations.loginRoute){inclusive = true}
+            navigateToNextScreen =  {navController.navigate(NavigationDestinations.SelectCompany){
+                popUpTo(NavigationDestinations.loginRoute){inclusive = true}
             } },
             viewModel.successState
         )

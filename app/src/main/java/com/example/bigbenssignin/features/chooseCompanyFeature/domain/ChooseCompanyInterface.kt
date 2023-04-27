@@ -1,9 +1,10 @@
 package com.example.bigbenssignin.features.chooseCompanyFeature.domain
 
-import com.example.bigbenssignin.ChooseCompanyFeature.ListOfCompaniesItem
+import com.example.bigbenssignin.common.Domain.models.SuccessState
+import com.example.bigbenssignin.features.chooseCompanyFeature.domain.models.Companies
 
-interface choseCompanyInterface {
-    suspend fun getcompanys():List<ListOfCompaniesItem>
+interface ChooseCompanyRepositoryInterface {
+    suspend fun getListOfCompanies(): SuccessState<List<Companies>>
 
-    suspend fun getprojects():String
+    suspend fun getListOfProjects():SuccessState<String>
 }

@@ -10,7 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import com.example.bigbenssignin.SuccessState
+import com.example.bigbenssignin.common.Domain.models.SuccessState
 import com.example.bigbenssignin.features.loginToProcoreFeature.presentation.*
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
