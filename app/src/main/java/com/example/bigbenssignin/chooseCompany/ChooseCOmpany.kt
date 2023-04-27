@@ -16,13 +16,14 @@ import kotlinx.coroutines.flow.collect
 fun NavGraphBuilder.ChooseCompanyProject(navController: NavController){
     composable(navigationDestenations.SelecteCompany) {
         val viewModel: chooseCompanyProjectViewModel = hiltViewModel()
-        ChooseCompany(navController)
+        ChooseCompany(navController, viewModel)
     }
 }
 
 @Composable
 fun ChooseCompany(
-    navController: NavController
+    navController: NavController,
+    viewModel:chooseCompanyProjectViewModel
 ) {
-
+    Text(viewModel.companysList.toString())
 }
