@@ -7,7 +7,7 @@ import com.example.bigbenssignin.common.data.ApiKeys
 import com.example.bigbenssignin.features.loginToProcoreFeature.domain.SigninInterface
 import com.example.bigbenssignin.features.loginToProcoreFeature.domain.models.RequestForTokenFromProcore
 import com.example.bigbenssignin.features.loginToProcoreFeature.domain.models.ReturnFromRequestForToken
-import com.example.bigbenssignin.common.data.dataStore.TokenAndRefreshToken
+import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentifiers
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 class SigninRepository @Inject constructor(
     private val client: HttpClient,
-    val datastore :DataStore<TokenAndRefreshToken>
+    val datastore :DataStore<LoggedInProfileKeyIdentifiers>
 ): SigninInterface {
     override suspend fun tradeAuthorisationCodeForTokenWithProcore(authorisationCode: String): SuccessState<String> {
         val jsonQuery = Json.encodeToString(
@@ -35,7 +35,7 @@ class SigninRepository @Inject constructor(
     private suspend fun httpRequestForTokenWithProcore(
         client: HttpClient,
         jsonQuery: String,
-        datastore: DataStore<TokenAndRefreshToken>
+        datastore: DataStore<LoggedInProfileKeyIdentifiers>
     ) = try {
         val token = httpRequestForTokenWithProcore(client, jsonQuery)
         addTokenToDataStore(token, datastore)
@@ -56,7 +56,7 @@ class SigninRepository @Inject constructor(
 
     private suspend fun addTokenToDataStore(
         token: ReturnFromRequestForToken,
-        datastore: DataStore<TokenAndRefreshToken>
+        datastore: DataStore<LoggedInProfileKeyIdentifiers>
     ) {
         datastore.updateData { data ->
             data.copy(token = token.access_token, refreshToken = token.refresh_token)

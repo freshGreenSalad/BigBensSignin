@@ -1,11 +1,10 @@
 package com.example.bigbenssignin.features.chooseCompanyFeature.data
 
 import android.util.Log
-import androidx.compose.runtime.collectAsState
 import androidx.datastore.core.DataStore
 import com.example.bigbenssignin.features.chooseCompanyFeature.domain.ChooseCompanyRepositoryInterface
 import com.example.bigbenssignin.common.Domain.models.SuccessState
-import com.example.bigbenssignin.common.data.dataStore.TokenAndRefreshToken
+import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentifiers
 import com.example.bigbenssignin.features.chooseCompanyFeature.domain.models.Companies
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -20,7 +19,7 @@ import javax.inject.Inject
 
 class ChooseCompanyImplementation @Inject constructor(
     private val client: HttpClient,
-    val datastore : DataStore<TokenAndRefreshToken>
+    val datastore : DataStore<LoggedInProfileKeyIdentifiers>
 ): ChooseCompanyRepositoryInterface {
     override suspend fun getListOfCompanies(): SuccessState<List<Companies>>{
         Log.d("", "in the get list of companies function")

@@ -22,7 +22,7 @@ fun ApplicationState(
     Crossfade(targetState = networkState.value, animationSpec = tween(1000)) { networkStateAnim ->
         when (networkStateAnim){
             ConnectivityObserver.Status.Available -> {
-                Navigation()
+                Navigation(viewModel.tokenAndRefreshToken.collectAsState().value)
             }
             ConnectivityObserver.Status.Unavailable -> {
                 NetworkLoading()
