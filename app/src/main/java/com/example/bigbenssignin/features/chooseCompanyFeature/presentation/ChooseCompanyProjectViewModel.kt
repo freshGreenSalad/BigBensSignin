@@ -24,6 +24,10 @@ class ChooseCompanyProjectViewModel @Inject constructor(
 
     val companiesList = mutableStateOf<List<Companies>>(emptyList())
 
+    init {
+        choseCompanyProject(ChooseCompanyProjectEvent.getCompanies)
+    }
+
     fun choseCompanyProject(event: ChooseCompanyProjectEvent){
         when(event){
             is ChooseCompanyProjectEvent.ChooseCompany -> {}
@@ -31,14 +35,14 @@ class ChooseCompanyProjectViewModel @Inject constructor(
             is ChooseCompanyProjectEvent.getCompanies -> {
                 scope.launch(dispatcher) {
                     when(val companiesResult = choseCompanyProjectRepository.getListOfCompanies()){
-                            is SuccessState.Failure -> {
-                                Log.d("", "view model fail block")
-                                companiesList.value = emptyList()
-                            }
-                            is SuccessState.Success -> {
-                                companiesList.value = companiesResult.data ?:  emptyList()
-                            }
+                        is SuccessState.Failure -> {
+                            Log.d("", "view model fail block")
+                            companiesList.value = emptyList()
                         }
+                        is SuccessState.Success -> {
+                            companiesList.value = companiesResult.data ?:  emptyList()
+                        }
+                    }
                 }
             }
         }

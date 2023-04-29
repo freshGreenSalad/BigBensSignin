@@ -3,7 +3,8 @@ package com.example.bigbenssignin.features.loginToProcoreFeature.data
 import android.util.Log
 import androidx.datastore.core.DataStore
 import com.example.bigbenssignin.common.Domain.models.SuccessState
-import com.example.bigbenssignin.common.data.ApiKeys
+import com.example.bigbenssignin.common.Domain.models.ApiKeys
+import com.example.bigbenssignin.common.data.CommonHttpClientFunctionsImp
 import com.example.bigbenssignin.features.loginToProcoreFeature.domain.SigninInterface
 import com.example.bigbenssignin.features.loginToProcoreFeature.domain.models.RequestForTokenFromProcore
 import com.example.bigbenssignin.features.loginToProcoreFeature.domain.models.ReturnFromRequestForToken
@@ -18,7 +19,8 @@ import javax.inject.Inject
 
 class SigninRepository @Inject constructor(
     private val client: HttpClient,
-    val datastore :DataStore<LoggedInProfileKeyIdentifiers>
+    private val datastore :DataStore<LoggedInProfileKeyIdentifiers>,
+    private val commonHttpClientFunctionsImp: CommonHttpClientFunctionsImp
 ): SigninInterface {
     override suspend fun tradeAuthorisationCodeForTokenWithProcore(authorisationCode: String): SuccessState<String> {
         val jsonQuery = Json.encodeToString(
@@ -38,7 +40,7 @@ class SigninRepository @Inject constructor(
         datastore: DataStore<LoggedInProfileKeyIdentifiers>
     ) = try {
         val token = httpRequestForTokenWithProcore(client, jsonQuery)
-        addTokenToDataStore(token, datastore)
+        commonHttpClientFunctionsImp.addTokenToDataStore(token, datastore)
         SuccessState.Success(token.access_token)
     } catch (e: Exception) {
         Log.d("", e.stackTraceToString())
@@ -53,15 +55,6 @@ class SigninRepository @Inject constructor(
             contentType(ContentType.Application.Json)
             setBody(jsonQuery)
         }.body()
-
-    private suspend fun addTokenToDataStore(
-        token: ReturnFromRequestForToken,
-        datastore: DataStore<LoggedInProfileKeyIdentifiers>
-    ) {
-        datastore.updateData { data ->
-            data.copy(token = token.access_token, refreshToken = token.refresh_token)
-        }
-    }
 }
 
 

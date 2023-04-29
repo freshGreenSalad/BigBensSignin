@@ -22,22 +22,10 @@ class ChooseCompanyImplementation @Inject constructor(
     val datastore : DataStore<LoggedInProfileKeyIdentifiers>
 ): ChooseCompanyRepositoryInterface {
     override suspend fun getListOfCompanies(): SuccessState<List<Companies>>{
-        Log.d("", "in the get list of companies function")
-
-        //try {
         val token = datastore.data.map { it.token }.first()
-        Log.d("", "datastore")
         val response = requestTokenFromClient(client, token)
-        Log.d("", "ktor")
-        val jsonResponse = Json.decodeFromString<List<Companies>>(response.body())
-        Log.d("", "json")
-        Log.d("", jsonResponse.toString())
+        Log.d("response from procore", response.status.toString())
         return SuccessState.Success(Json.decodeFromString<List<Companies>>(response.body()))
-        /*}catch (e:Exception){
-            Log.d("", e.stackTraceToString())
-            Log.d("", "failed to get a list of companies from the ProcoreApi")
-            SuccessState.Failure("failed to get a list of companies from the ProcoreApi")
-        }*/
     }
 
     override suspend fun getListOfProjects(): SuccessState<String> {

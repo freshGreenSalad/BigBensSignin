@@ -1,0 +1,56 @@
+package com.example.bigbenssignin.common.data
+
+import androidx.datastore.core.DataStore
+import com.example.bigbenssignin.common.Domain.CommonHttpClientFunctions
+import com.example.bigbenssignin.common.Domain.models.ApiKeys
+import com.example.bigbenssignin.common.Domain.models.HttpRequestConstants
+import com.example.bigbenssignin.common.Domain.models.RequestForRefreshToken
+import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentifiers
+import com.example.bigbenssignin.features.loginToProcoreFeature.domain.models.ReturnFromRequestForToken
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import javax.inject.Inject
+
+class CommonHttpClientFunctionsImp @Inject constructor(
+    private val dataStore: DataStore<LoggedInProfileKeyIdentifiers>,
+    private val client: HttpClient
+): CommonHttpClientFunctions {
+
+    override suspend fun tokenTimeoutCallBack(procoreApiFunction: () -> String): String {
+        val loggedInProfileKeyIdentifiers = dataStore.data.map { it }.first()
+        getTokenFromRefreshToken(loggedInProfileKeyIdentifiers)
+        return procoreApiFunction()
+    }
+
+    override suspend fun getTokenFromRefreshToken(loggedInProfileKeyIdentifiers: LoggedInProfileKeyIdentifiers) {
+        val request = RequestForRefreshToken(
+            client_id = ApiKeys().clientId,
+            client_secret = ApiKeys().clientSecret,
+            grant_type = "refresh_token",
+            redirect_uri = HttpRequestConstants.returnUri,
+            refresh_token = loggedInProfileKeyIdentifiers.refreshToken
+        )
+
+        val requestForToken = client.post("https://sandbox.procore.com/oauth/token"){
+            contentType(ContentType.Application.Json)
+            setBody(Json.encodeToString(request))
+        }.body<ReturnFromRequestForToken>()
+        addTokenToDataStore(requestForToken, dataStore)
+    }
+
+    suspend fun addTokenToDataStore(
+        token: ReturnFromRequestForToken,
+        datastore: DataStore<LoggedInProfileKeyIdentifiers>
+    ) {
+        datastore.updateData { data ->
+            data.copy(token = token.access_token, refreshToken = token.refresh_token)
+        }
+    }
+
+}
