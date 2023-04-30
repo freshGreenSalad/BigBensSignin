@@ -11,6 +11,8 @@ import com.example.bigbenssignin.features.chooseCompanyFeature.domain.models.Com
 import com.example.bigbenssignin.features.chooseCompanyFeature.domain.models.Project
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -23,17 +25,25 @@ class ChooseCompanyProjectViewModel @Inject constructor(
 ) {
     private val scope = viewModelScope
 
+    private val _navigaitonChannel = Channel<SuccessState<Unit>>()
+    val navigaitonChannel = _navigaitonChannel.receiveAsFlow()
+
     val companiesList = mutableStateOf<List<Companies>>(emptyList())
     val projectsList = mutableStateOf<List<Project>>(emptyList())
     val selectedProject = mutableStateOf("")
 
     init {
-        choseCompanyProject(ChooseCompanyProjectEvent.getCompanies)
+        choseCompanyProject(ChooseCompanyProjectEvent.GetCompanies)
     }
 
     fun choseCompanyProject(event: ChooseCompanyProjectEvent){
         when(event){
-            is ChooseCompanyProjectEvent.ChooseCompany -> {}
+            is ChooseCompanyProjectEvent.ChooseProject -> {
+                scope.launch(dispatcher) {
+                    choseCompanyProjectRepository.addProjectToDataStore(event.project)
+                    _navigaitonChannel.send(SuccessState.Success<Unit>())
+                }
+            }
             is ChooseCompanyProjectEvent.GetListOfProjects -> {
                 Log.d("","getlist of projects ")
                 scope.launch(dispatcher) {
@@ -50,7 +60,7 @@ class ChooseCompanyProjectViewModel @Inject constructor(
                     }
                 }
             }
-            is ChooseCompanyProjectEvent.getCompanies -> {
+            is ChooseCompanyProjectEvent.GetCompanies -> {
                 scope.launch(dispatcher) {
                     when(val companiesResult = choseCompanyProjectRepository.getListOfCompanies()){
                         is SuccessState.Failure -> {

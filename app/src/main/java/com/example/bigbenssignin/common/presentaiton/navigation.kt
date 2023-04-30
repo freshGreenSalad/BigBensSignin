@@ -5,7 +5,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentifiers
 import com.example.bigbenssignin.features.chooseCompanyFeature.presentation.chooseCompanyProject
-import com.example.bigbenssignin.features.loginToProcoreFeature.presentation.LoginScreen
+import com.example.bigbenssignin.features.loginToProcoreFeature.presentation.loginScreen
+import com.example.bigbenssignin.features.signinSignoutFeature.presentation.loginLogoutScreen
 
 @Composable
 fun Navigation(loggedInProfileKeyIdentifiers: LoggedInProfileKeyIdentifiers) {
@@ -17,8 +18,9 @@ fun Navigation(loggedInProfileKeyIdentifiers: LoggedInProfileKeyIdentifiers) {
         navController = navController,
         startDestination = destination
     ) {
-        LoginScreen(navController)
+        loginScreen(navController)
         chooseCompanyProject(navController)
+        loginLogoutScreen(navController)
     }
 }
 
@@ -30,8 +32,11 @@ private fun chooseDestinationBasedOnInformationAboutAccount(loggedInProfileKeyId
         loggedInProfileKeyIdentifiers.company.isEmpty() -> {
             NavigationDestinations.SelectCompany
         }
+        loggedInProfileKeyIdentifiers.project.isEmpty() -> {
+            NavigationDestinations.SelectCompany
+        }
         else -> {
-            ""
+            NavigationDestinations.LoginLogout
         }
     }
 }

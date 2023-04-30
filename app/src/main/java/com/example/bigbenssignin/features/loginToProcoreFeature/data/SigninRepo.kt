@@ -40,11 +40,11 @@ class SigninRepository @Inject constructor(
         datastore: DataStore<LoggedInProfileKeyIdentifiers>
     ) = try {
         val token = httpRequestForTokenWithProcore(client, jsonQuery)
-        commonHttpClientFunctionsImp.addTokenToDataStore(token, datastore)
+        commonHttpClientFunctionsImp.addTokenToDataStore(token)
         SuccessState.Success(token.access_token)
     } catch (e: Exception) {
         Log.d("", e.stackTraceToString())
-        SuccessState.Failure("failed to get token with the authorisation code from Procore")
+        SuccessState.Failure<String>("failed to get token with the authorisation code from Procore")
     }
 
     private suspend fun httpRequestForTokenWithProcore(

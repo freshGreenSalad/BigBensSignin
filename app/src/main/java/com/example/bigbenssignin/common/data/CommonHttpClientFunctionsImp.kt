@@ -43,15 +43,30 @@ class CommonHttpClientFunctionsImp @Inject constructor(
             setBody(Json.encodeToString(request))
         }.body<ReturnFromRequestForToken>()
         Log.d("", requestForToken.toString())
-        addTokenToDataStore(requestForToken, dataStore)
+        addTokenToDataStore(requestForToken)
     }
 
     suspend fun addTokenToDataStore(
         token: ReturnFromRequestForToken,
-        datastore: DataStore<LoggedInProfileKeyIdentifiers>
     ) {
-        datastore.updateData { data ->
+        dataStore.updateData { data ->
             data.copy(token = token.access_token, refreshToken = token.refresh_token)
+        }
+    }
+
+    suspend fun addCompanyToDataStore(
+        company:String,
+    ){
+        dataStore.updateData { data ->
+            data.copy(company = company)
+        }
+    }
+
+    suspend fun addProjectToDataStore(
+        project:String,
+    ){
+        dataStore.updateData { data ->
+            data.copy(project = project)
         }
     }
 }

@@ -25,32 +25,33 @@ class ChooseCompanyImplementation @Inject constructor(
     private val commonHttpClientFunctionsImp: CommonHttpClientFunctionsImp
 ): ChooseCompanyRepositoryInterface {
     override suspend fun getListOfCompanies(): SuccessState<List<Companies>> {
+
         val token = datastore.data.map { it.token }.first()
-        val response = try {
-            val response = Json.decodeFromString<List<Companies>>(getCompaniesList(client, token))
-            SuccessState.Success(response)
-        }catch (e:Exception){
-            try {
-                val response = commonHttpClientFunctionsImp.tokenTimeoutCallBack(
-                    procoreApiFunction = { getCompaniesList(client, token) }
-                )
-                val jsonClass = Json.decodeFromString<List<Companies>>(response)
-                SuccessState.Success(jsonClass)
-            } catch (e: Exception) {
-                SuccessState.Failure("Failed to get list of companies from Procore")
+
+        val httpResponse = getCompaniesList(client, token)
+
+        val response = when(httpResponse.status.value){
+            200 ->{
+                val listCompanies = Json.decodeFromString<List<Companies>>(httpResponse.body())
+                SuccessState.Success(listCompanies)
             }
+            401 ->{
+                val response = commonHttpClientFunctionsImp.tokenTimeoutCallBack(
+                    procoreApiFunction = { getCompaniesList(client, token).body() }
+                )
+                val listCompanies = Json.decodeFromString<List<Companies>>(response)
+                SuccessState.Success(listCompanies)
+            }
+            403 ->{SuccessState.Failure("Failed to get list of companies from Procore 403")}
+            else ->{SuccessState.Failure("Failed to get list of companies from Procore else")}
         }
         return response
     }
 
     override suspend fun getListOfProjects(company:String): SuccessState<List<Project>> { // TODO: the refresh token logic is not working quite right we're still getting an error
         val token = datastore.data.map { it.token }.first()
-        val dataStoreCompany = datastore.data.map { it.company }.first()
 
-        Log.d("","getlist of projects repo")
-        Log.d("token",token)
-        Log.d("company",company)
-        Log.d("company",dataStoreCompany)
+        commonHttpClientFunctionsImp.addCompanyToDataStore(company)
 
         val httpResponse = getProjectsList(client, token, company)
 
@@ -82,13 +83,17 @@ class ChooseCompanyImplementation @Inject constructor(
         return response
     }
 
-    private suspend fun getCompaniesList(client: HttpClient, token:String): String {
+    override suspend fun addProjectToDataStore(project: String) {
+        commonHttpClientFunctionsImp.addProjectToDataStore(project)
+    }
+
+    private suspend fun getCompaniesList(client: HttpClient, token:String): HttpResponse {
         val response = client.get("https://sandbox.procore.com/rest/v1.0/companies") {
             bearerAuth(token)
             contentType(ContentType.Application.Json)
         }
 
-        return response.body()
+        return response
     }
 
     private suspend fun getProjectsList(client: HttpClient, token: String, company:String): HttpResponse {

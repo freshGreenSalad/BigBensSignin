@@ -10,7 +10,7 @@ import com.example.bigbenssignin.common.presentaiton.NavigationDestinations
 import com.example.bigbenssignin.common.domain.SuccessState
 import kotlinx.coroutines.flow.Flow
 
-fun NavGraphBuilder.LoginScreen(navController: NavController){
+fun NavGraphBuilder.loginScreen(navController: NavController){
     composable(NavigationDestinations.loginRoute) {
         val viewModel = hiltViewModel<LoginViewModel>()
         LoginToProCore(
