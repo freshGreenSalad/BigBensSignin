@@ -1,5 +1,8 @@
-package com.example.bigbenssignin.common.Domain.models
+package com.example.bigbenssignin.common.domain.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class RequestForRefreshToken(
     val client_id: String,
     val client_secret: String,

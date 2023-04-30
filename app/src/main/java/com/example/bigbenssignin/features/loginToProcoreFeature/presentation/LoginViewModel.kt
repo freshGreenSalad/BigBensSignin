@@ -3,7 +3,7 @@ package com.example.bigbenssignin.features.loginToProcoreFeature.presentation
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bigbenssignin.common.Domain.models.SuccessState
+import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.dependencyInjection.IoDispatcher
 import com.example.bigbenssignin.features.loginToProcoreFeature.data.SigninRepository
 import dagger.hilt.android.lifecycle.HiltViewModel

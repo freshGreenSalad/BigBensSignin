@@ -7,7 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.bigbenssignin.common.presentaiton.NavigationDestinations
-import com.example.bigbenssignin.common.Domain.models.SuccessState
+import com.example.bigbenssignin.common.domain.SuccessState
 import kotlinx.coroutines.flow.Flow
 
 fun NavGraphBuilder.LoginScreen(navController: NavController){
@@ -36,6 +36,7 @@ fun NavigateToSelectCompanyOnSuccessState(successState: Flow<SuccessState<Unit>>
                 is SuccessState.Success -> {
                     navigateToNextScreen()
                 }
+                else -> {}
             }
         }
     }

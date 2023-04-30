@@ -1,12 +1,13 @@
 package com.example.bigbenssignin.common.data
 
+import android.util.Log
 import androidx.datastore.core.DataStore
-import com.example.bigbenssignin.common.Domain.CommonHttpClientFunctions
-import com.example.bigbenssignin.common.Domain.models.ApiKeys
-import com.example.bigbenssignin.common.Domain.models.HttpRequestConstants
-import com.example.bigbenssignin.common.Domain.models.RequestForRefreshToken
+import com.example.bigbenssignin.common.domain.CommonHttpClientFunctions
+import com.example.bigbenssignin.common.domain.models.ApiKeys
+import com.example.bigbenssignin.common.domain.models.HttpRequestConstants
+import com.example.bigbenssignin.common.domain.models.RequestForRefreshToken
 import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentifiers
-import com.example.bigbenssignin.features.loginToProcoreFeature.domain.models.ReturnFromRequestForToken
+import com.example.bigbenssignin.common.domain.models.ReturnFromRequestForToken
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
@@ -22,7 +23,7 @@ class CommonHttpClientFunctionsImp @Inject constructor(
     private val client: HttpClient
 ): CommonHttpClientFunctions {
 
-    override suspend fun tokenTimeoutCallBack(procoreApiFunction: () -> String): String {
+    override suspend fun tokenTimeoutCallBack(procoreApiFunction: suspend () -> String): String {
         val loggedInProfileKeyIdentifiers = dataStore.data.map { it }.first()
         getTokenFromRefreshToken(loggedInProfileKeyIdentifiers)
         return procoreApiFunction()
@@ -41,6 +42,7 @@ class CommonHttpClientFunctionsImp @Inject constructor(
             contentType(ContentType.Application.Json)
             setBody(Json.encodeToString(request))
         }.body<ReturnFromRequestForToken>()
+        Log.d("", requestForToken.toString())
         addTokenToDataStore(requestForToken, dataStore)
     }
 
@@ -52,5 +54,4 @@ class CommonHttpClientFunctionsImp @Inject constructor(
             data.copy(token = token.access_token, refreshToken = token.refresh_token)
         }
     }
-
 }

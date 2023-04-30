@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.common.Domain.models
+package com.example.bigbenssignin.common.domain.models
 
 object HttpRequestConstants {
     const val ProcoreAddress = ""
