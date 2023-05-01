@@ -41,6 +41,7 @@ class SigninRepository @Inject constructor(
     ) = try {
         val token = httpRequestForTokenWithProcore(client, jsonQuery)
         commonHttpClientFunctionsImp.addTokenToDataStore(token)
+        Log.d("token", token.access_token)
         SuccessState.Success(token.access_token)
     } catch (e: Exception) {
         Log.d("", e.stackTraceToString())
