@@ -2,8 +2,8 @@ package com.example.bigbenssignin.dependencyInjection
 
 import com.example.bigbenssignin.features.chooseCompanyFeature.data.ChooseCompanyImplementation
 import com.example.bigbenssignin.features.chooseCompanyFeature.domain.ChooseCompanyRepositoryInterface
-import com.example.bigbenssignin.features.chooseCompanyFeature.loginToProcoreFeature.domain.SigninInterface
-import com.example.bigbenssignin.features.chooseCompanyFeature.loginToProcoreFeature.data.SigninRepository
+import com.example.bigbenssignin.features.loginToProcoreFeature.domain.SigninInterface
+import com.example.bigbenssignin.features.loginToProcoreFeature.data.SigninRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

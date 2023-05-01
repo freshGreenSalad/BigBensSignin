@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.datastore.core.DataStore
 import com.example.bigbenssignin.common.data.CommonHttpClientFunctionsImp
 import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentifiers
+import com.example.bigbenssignin.common.data.room.PeopleDao
 import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.common.domain.models.HttpRequestConstants
 import com.example.bigbenssignin.features.signinSignoutFeature.domain.models.People
@@ -14,6 +15,7 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
@@ -23,7 +25,8 @@ import javax.inject.Inject
 class signInSignOutRepositoryImp @Inject constructor(
     private val client: HttpClient,
     private val datastore :DataStore<LoggedInProfileKeyIdentifiers>,
-    private val commonHttpClientFunctionsImp: CommonHttpClientFunctionsImp
+    private val commonHttpClientFunctionsImp: CommonHttpClientFunctionsImp,
+    private val peopleDao: PeopleDao
 ): signInSignoutRepository {
     override suspend fun getListofWorkers(): SuccessState<List<People>> {
         val project = datastore.data.map { it.project }.first()
@@ -56,8 +59,12 @@ class signInSignOutRepositoryImp @Inject constructor(
         return response
     }
 
-    override suspend fun addPersonToRoom(person: Person) {
-        TODO("Not yet implemented")
+    override suspend fun addPersonToRoom(person: People) {
+        peopleDao.insertAll(person)
+    }
+
+    override fun getListOfSignedInUsers(): Flow<List<People>> {
+        return peopleDao.getall()
     }
 
     private suspend fun getProjectPeople(project: String, token:String):HttpResponse {

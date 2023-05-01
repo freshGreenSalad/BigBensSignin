@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.features.chooseCompanyFeature.loginToProcoreFeature.domain.models
+package com.example.bigbenssignin.features.loginToProcoreFeature.domain.models
 
 import kotlinx.serialization.Serializable
 

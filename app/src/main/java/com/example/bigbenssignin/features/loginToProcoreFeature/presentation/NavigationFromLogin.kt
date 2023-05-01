@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.features.chooseCompanyFeature.loginToProcoreFeature.presentation
+package com.example.bigbenssignin.features.loginToProcoreFeature.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

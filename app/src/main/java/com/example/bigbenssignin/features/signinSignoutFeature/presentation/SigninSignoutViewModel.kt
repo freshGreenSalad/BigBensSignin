@@ -8,29 +8,38 @@ import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.dependencyInjection.IoDispatcher
 import com.example.bigbenssignin.features.signinSignoutFeature.data.signInSignOutRepositoryImp
 import com.example.bigbenssignin.features.signinSignoutFeature.domain.models.People
+import com.example.bigbenssignin.features.signinSignoutFeature.domain.models.useCaseWorkersNotYetSignedin
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SigninSignoutViewModel @Inject constructor(
     private val signInSignOutRepositoryImp: signInSignOutRepositoryImp,
-    @IoDispatcher private val dispatcher: CoroutineDispatcher
+    @IoDispatcher private val dispatcher: CoroutineDispatcher,
+    private val getWorkersNotSignedIn : useCaseWorkersNotYetSignedin
 ):ViewModel() {
     val scope = viewModelScope
 
-    val listOfPeople = mutableStateOf<List<People>>(emptyList())
+    val listOfPeople = getWorkersNotSignedIn().stateIn(
+        initialValue = emptyList(),
+        scope = viewModelScope, //TODO("change to dispatcher")
+        started = WhileSubscribed(5000)
+    )
 
-    init {
-        signInSignoutEvent(SigninSignoutEvent.GetListOfPeople)
-        Log.d("", "initviewmodel")
-    }
+    val signedInPeopleFlow = signInSignOutRepositoryImp.getListOfSignedInUsers().stateIn(
+            initialValue = emptyList(),
+            scope = viewModelScope, //TODO("change to dispatcher")
+            started = WhileSubscribed(5000)
+        )
 
     fun signInSignoutEvent(event: SigninSignoutEvent){
         when(event){
             SigninSignoutEvent.GetListOfPeople -> {
-                scope.launch(dispatcher) {
+                /*scope.launch(dispatcher) {
                     when(
                     val people = signInSignOutRepositoryImp.getListofWorkers()
                     ){
@@ -40,8 +49,7 @@ class SigninSignoutViewModel @Inject constructor(
                             listOfPeople.value = people.data ?: emptyList()
                         }
                     }
-                }
-
+                }*/
             }
             is SigninSignoutEvent.AddToRoom -> {
                 scope.launch(dispatcher) {

@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.features.chooseCompanyFeature.loginToProcoreFeature.presentation
+package com.example.bigbenssignin.features.loginToProcoreFeature.presentation
 
 import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent

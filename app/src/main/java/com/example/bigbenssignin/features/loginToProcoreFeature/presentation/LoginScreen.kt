@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.features.chooseCompanyFeature.loginToProcoreFeature.presentation
+package com.example.bigbenssignin.features.loginToProcoreFeature.presentation
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardActions

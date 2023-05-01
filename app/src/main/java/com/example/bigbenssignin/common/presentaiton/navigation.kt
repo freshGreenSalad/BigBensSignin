@@ -5,7 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentifiers
 import com.example.bigbenssignin.features.chooseCompanyFeature.presentation.chooseCompanyProject
-import com.example.bigbenssignin.features.chooseCompanyFeature.loginToProcoreFeature.presentation.loginScreen
+import com.example.bigbenssignin.features.loginToProcoreFeature.presentation.loginScreen
 import com.example.bigbenssignin.features.signinSignoutFeature.presentation.loginLogoutScreen
 
 @Composable

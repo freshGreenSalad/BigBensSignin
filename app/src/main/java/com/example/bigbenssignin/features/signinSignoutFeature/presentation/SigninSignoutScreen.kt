@@ -11,18 +11,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bigbenssignin.features.signinSignoutFeature.domain.models.People
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun SigninSignoutScreen(
-    listPeople: State<List<People>>,
-    addToRoom:(SigninSignoutEvent)-> Unit
+    listPeople: Flow<List<People>>,
+    addToRoom:(SigninSignoutEvent)-> Unit,
+    signedinWorkerList:Flow<List<People>>
 ) {
     val selectedTabIndex = remember { mutableStateOf(0) }
     Column(Modifier.fillMaxSize()) {
@@ -45,7 +45,7 @@ fun SigninSignoutScreen(
         Crossfade(targetState = selectedTabIndex.value) {index ->
             when(index){
                 0 -> {LazyListOfPeople(listPeople,addToRoom)}
-                1 -> {LazyListOfSignedInUsers()}
+                1 -> {LazyListOfSignedInUsers(signedinWorkerList)}
             }
         }
 
@@ -54,20 +54,25 @@ fun SigninSignoutScreen(
 
 @Composable
 fun LazyListOfPeople(
-    listPeople: State<List<People>>,
+    listPeople: Flow<List<People>>,
     addToRoom:(SigninSignoutEvent)-> Unit
 ) {
+    val notyetsignedin = listPeople.collectAsStateWithLifecycle(initialValue = emptyList())
     LazyColumn(){
-        items(listPeople.value){person ->
+        items(notyetsignedin.value){person ->
             personCard(person,{addToRoom(SigninSignoutEvent.AddToRoom(person))})
         }
     }
 }
 
 @Composable
-fun LazyListOfSignedInUsers() {
-    Column {
-        Text(text = "signedinUsers")
+fun LazyListOfSignedInUsers(signedinWorkerList:Flow<List<People>>,) {
+
+    val signedinWorkerListState = signedinWorkerList.collectAsStateWithLifecycle(initialValue = emptyList())
+    LazyColumn(){
+        items(signedinWorkerListState.value){person ->
+            personCard(person,{})
+        }
     }
 }
 
