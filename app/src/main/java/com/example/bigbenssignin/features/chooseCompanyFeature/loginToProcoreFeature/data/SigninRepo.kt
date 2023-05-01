@@ -1,12 +1,12 @@
-package com.example.bigbenssignin.features.loginToProcoreFeature.data
+package com.example.bigbenssignin.features.chooseCompanyFeature.loginToProcoreFeature.data
 
 import android.util.Log
 import androidx.datastore.core.DataStore
 import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.common.domain.models.ApiKeys
 import com.example.bigbenssignin.common.data.CommonHttpClientFunctionsImp
-import com.example.bigbenssignin.features.loginToProcoreFeature.domain.SigninInterface
-import com.example.bigbenssignin.features.loginToProcoreFeature.domain.models.RequestForTokenFromProcore
+import com.example.bigbenssignin.features.chooseCompanyFeature.loginToProcoreFeature.domain.SigninInterface
+import com.example.bigbenssignin.features.chooseCompanyFeature.loginToProcoreFeature.domain.models.RequestForTokenFromProcore
 import com.example.bigbenssignin.common.domain.models.ReturnFromRequestForToken
 import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentifiers
 import io.ktor.client.*

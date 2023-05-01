@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.features.loginToProcoreFeature.presentation
+package com.example.bigbenssignin.features.chooseCompanyFeature.loginToProcoreFeature.presentation
 
 
 sealed interface OnEventLogin{

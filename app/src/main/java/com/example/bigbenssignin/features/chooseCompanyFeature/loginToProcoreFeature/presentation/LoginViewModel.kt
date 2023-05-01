@@ -1,11 +1,11 @@
-package com.example.bigbenssignin.features.loginToProcoreFeature.presentation
+package com.example.bigbenssignin.features.chooseCompanyFeature.loginToProcoreFeature.presentation
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.dependencyInjection.IoDispatcher
-import com.example.bigbenssignin.features.loginToProcoreFeature.data.SigninRepository
+import com.example.bigbenssignin.features.chooseCompanyFeature.loginToProcoreFeature.data.SigninRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
@@ -15,8 +15,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-        private val signinRepository: SigninRepository,
-        @IoDispatcher private val dispatcher: CoroutineDispatcher,
+    private val signinRepository: SigninRepository,
+    @IoDispatcher private val dispatcher: CoroutineDispatcher,
 ):ViewModel() {
         private val scope = viewModelScope
 
