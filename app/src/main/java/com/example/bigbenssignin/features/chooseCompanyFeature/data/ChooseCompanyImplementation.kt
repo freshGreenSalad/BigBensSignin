@@ -6,6 +6,7 @@ import com.example.bigbenssignin.common.data.CommonHttpClientFunctionsImp
 import com.example.bigbenssignin.features.chooseCompanyFeature.domain.ChooseCompanyRepositoryInterface
 import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentifiers
+import com.example.bigbenssignin.common.domain.models.HttpRequestConstants
 import com.example.bigbenssignin.features.chooseCompanyFeature.domain.models.Companies
 import com.example.bigbenssignin.features.chooseCompanyFeature.domain.models.Project
 import io.ktor.client.*
@@ -48,7 +49,7 @@ class ChooseCompanyImplementation @Inject constructor(
         return response
     }
 
-    override suspend fun getListOfProjects(company:String): SuccessState<List<Project>> { // TODO: the refresh token logic is not working quite right we're still getting an error
+    override suspend fun getListOfProjects(company:String): SuccessState<List<Project>> {
         val token = datastore.data.map { it.token }.first()
 
         commonHttpClientFunctionsImp.addCompanyToDataStore(company)
@@ -57,12 +58,9 @@ class ChooseCompanyImplementation @Inject constructor(
 
         val response = when (httpResponse.status.value){
                 200 -> {
-                    Log.d("200", httpResponse.body())
                     SuccessState.Success(Json.decodeFromString<List<Project>>(httpResponse.body()))
                 }
                 401 -> {
-                    Log.d("getlistOfProjects", "401")
-
                     val retry = commonHttpClientFunctionsImp.tokenTimeoutCallBack(
                         procoreApiFunction = { getProjectsList(client, token, company).body() }
                     )
@@ -70,13 +68,9 @@ class ChooseCompanyImplementation @Inject constructor(
                     SuccessState.Success(jsonClass)
                 }
                 403 -> {
-                    Log.d("getlistOfProjects", "403 error")
-
                     SuccessState.Failure("Failed to get list of Projects from Procore")
                 }
             else -> {
-                Log.d("getlistOfProjects", "else error")
-
                 SuccessState.Failure("Failed to get list of Projects from Procore")
             }
         }
@@ -88,7 +82,7 @@ class ChooseCompanyImplementation @Inject constructor(
     }
 
     private suspend fun getCompaniesList(client: HttpClient, token:String): HttpResponse {
-        val response = client.get("https://sandbox.procore.com/rest/v1.0/companies") {
+        val response = client.get(HttpRequestConstants.companyRequest) {
             bearerAuth(token)
             contentType(ContentType.Application.Json)
         }
@@ -98,7 +92,7 @@ class ChooseCompanyImplementation @Inject constructor(
 
     private suspend fun getProjectsList(client: HttpClient, token: String, company:String): HttpResponse {
 
-        val response = client.get("https://sandbox.procore.com/rest/v1.0/companies/${company}/projects") {
+        val response = client.get(HttpRequestConstants.getCompanyUri(company)) {
             bearerAuth(token)
             contentType(ContentType.Application.Json)
         }

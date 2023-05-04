@@ -34,17 +34,16 @@ class CommonHttpClientFunctionsImp @Inject constructor(
         val request = RequestForRefreshToken(
             client_id = ApiKeys().clientId,
             client_secret = ApiKeys().clientSecret,
-            grant_type = "refresh_token",
+            grant_type = HttpRequestConstants.tokenRequestType_requestToken,
             redirect_uri = HttpRequestConstants.returnUri,
             refresh_token = loggedInProfileKeyIdentifiers.refreshToken
         )
 
-        val requestForToken = client.post("https://sandbox.procore.com/oauth/token"){
+        val requestForToken = client.post(HttpRequestConstants.tokenRequest){
             contentType(ContentType.Application.Json)
             setBody(Json.encodeToString(request))
         }.body<ReturnFromRequestForToken>()
 
-        Log.d("", requestForToken.toString())
         addTokenToDataStore(requestForToken)
     }
 

@@ -77,51 +77,48 @@ class signInSignOutRepositoryImp @Inject constructor(
         ).truncatedTo(ChronoUnit.SECONDS)
         val formatedtimeIn = DateTimeFormatter.ISO_INSTANT.format(timein)
 
-        Log.d("formatedTime", formatedtimeIn)
-
-
-
         val timesheet = TimeCardEntry(
             hours = "7.0",
             lunch_time = "60",
             party_id = person.id?:0,
-            time_in = timein.toString(),
-            time_out = "2023-5-1T16:00:12Z",
-            date =  "2020-10-14",
+            time_in = formatedtimeIn.toString(),
+            time_out = "",
+            date =  "",
             description = "time sheet from bens signin app",
         )
         timeSheetDao.insertAlltimecard(timesheet)
     }
 
     override suspend fun signuserOut(person: People) {
+
+        val project = datastore.data.map { it.project }.first()
+
+        val token = datastore.data.map { it.token }.first()
+
         val timeOut = ZonedDateTime.ofInstant(
             Instant.ofEpochMilli(System.currentTimeMillis()),
             ZoneId.of("GMT+12")
         ).plusHours(1)
+
         val formatedtimeOut = DateTimeFormatter.ISO_INSTANT.format(timeOut)
-        val project = datastore.data.map { it.project }.first()
-        val token = datastore.data.map { it.token }.first()
 
         val date = LocalDate.now()
-        Log.d("date", date.toString())
-        Log.d("timeout", formatedtimeOut.toString())
 
         try {
             val timesheet = timeSheetDao.getonetimecard(personId = person.id!!)
-            Log.d("timesheet", timesheet.toString())
             timeSheetDao.deleteTimecard(timesheet)
             val timeSheetWithoutAutoGenerate = timecardwithoutprimarykey(timesheet)
             val timeSheetWithTimeOutAndDate = timeSheetWithoutAutoGenerate.copy(time_out = formatedtimeOut, date = date.toString())
-            sendtimesheetToProcore(timeSheetWithTimeOutAndDate,  project, token)
+            sendTimeSheetToProcore(timeSheetWithTimeOutAndDate,  project, token)
             peopleDao.deletePeople(person)
         } catch (e:Exception){
             Log.d("",e.toString())
         }
     }
 
-    private suspend fun sendtimesheetToProcore(timeCardEntry: TimeCardEntryWithoutAutoGenerate, project: String, token:String) {
-        val uri = HttpRequestConstants.procoreBaseUri + "/rest/v1.0/projects/${project}/timecard_entries"
-        val response = client.post(uri) {
+    private suspend fun sendTimeSheetToProcore(timeCardEntry: TimeCardEntryWithoutAutoGenerate, project: String, token:String) {
+        val uri = HttpRequestConstants.getTimeCardEntriesUri(project)
+       client.post(uri) {
             bearerAuth(token)
             setBody(timeCardEntry)
             contentType(ContentType.Application.Json)
@@ -129,12 +126,11 @@ class signInSignOutRepositoryImp @Inject constructor(
     }
 
     private suspend fun getProjectPeople(project: String, token:String):HttpResponse {
-        Log.d("token", token)
-        val uri = HttpRequestConstants.procoreBaseUri + "/rest/v1.0/projects/${project}/people"
-        val httpresponse = client.get(uri) {
+        val uri = HttpRequestConstants.getProjectPeopleUri(project)
+        val httpResponse = client.get(uri) {
             bearerAuth(token)
             contentType(ContentType.Application.Json)
         }
-        return httpresponse
+        return httpResponse
     }
 }
