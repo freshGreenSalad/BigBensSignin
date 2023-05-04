@@ -14,6 +14,7 @@ data class TimeCardEntry(
     val party_id: Int,
     val time_in: String,
     val time_out: String,
+    val date: String,
 )
 
 
@@ -25,6 +26,7 @@ data class TimeCardEntryWithoutAutoGenerate(
     val party_id: Int,
     val time_in: String,
     val time_out: String,
+    val date: String,
 )
 fun timecardwithoutprimarykey(timeCardEntry: TimeCardEntry):TimeCardEntryWithoutAutoGenerate{
     return TimeCardEntryWithoutAutoGenerate(
@@ -34,5 +36,6 @@ fun timecardwithoutprimarykey(timeCardEntry: TimeCardEntry):TimeCardEntryWithout
         party_id = timeCardEntry.party_id,
         time_in = timeCardEntry.time_in,
         time_out = timeCardEntry.time_out,
+        date = timeCardEntry.date
     )
 }
