@@ -11,4 +11,8 @@ interface signInSignoutRepository {
 
     fun getListOfSignedInUsers(): Flow<List<People>>
 
+    suspend fun addTimesheetToRoom(person: People)
+
+    suspend fun signuserOut(person: People)
+
 }

@@ -1,6 +1,5 @@
 package com.example.bigbenssignin.features.signinSignoutFeature.presentation
 
-import android.app.Person
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -45,7 +44,7 @@ fun SigninSignoutScreen(
         Crossfade(targetState = selectedTabIndex.value) {index ->
             when(index){
                 0 -> {LazyListOfPeople(listPeople,addToRoom)}
-                1 -> {LazyListOfSignedInUsers(signedinWorkerList)}
+                1 -> {LazyListOfSignedInUsers(signedinWorkerList,addToRoom) }
             }
         }
 
@@ -60,18 +59,23 @@ fun LazyListOfPeople(
     val notyetsignedin = listPeople.collectAsStateWithLifecycle(initialValue = emptyList())
     LazyColumn(){
         items(notyetsignedin.value){person ->
-            personCard(person,{addToRoom(SigninSignoutEvent.AddToRoom(person))})
+            personCard(person,{
+                addToRoom(SigninSignoutEvent.AddTimesheetToRoom(person))
+                addToRoom(SigninSignoutEvent.AddPersonToRoom(person))
+            })
         }
     }
 }
 
 @Composable
-fun LazyListOfSignedInUsers(signedinWorkerList:Flow<List<People>>,) {
+fun LazyListOfSignedInUsers(signedinWorkerList:Flow<List<People>>, removeFromRoom:(SigninSignoutEvent)-> Unit) {
 
     val signedinWorkerListState = signedinWorkerList.collectAsStateWithLifecycle(initialValue = emptyList())
     LazyColumn(){
         items(signedinWorkerListState.value){person ->
-            personCard(person,{})
+            personCard(person,{
+                removeFromRoom(SigninSignoutEvent.Logout(person))
+            })
         }
     }
 }
@@ -94,5 +98,4 @@ fun personCard(
             Text(text = person.name ?: "no name")
         }
     }
-
 }

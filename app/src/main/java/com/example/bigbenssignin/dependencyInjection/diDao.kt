@@ -2,6 +2,7 @@ package com.example.bigbenssignin.dependencyInjection
 
 import com.example.bigbenssignin.common.data.room.BensAppDatabase
 import com.example.bigbenssignin.common.data.room.PeopleDao
+import com.example.bigbenssignin.common.data.room.TimeSheetDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,6 +13,9 @@ import dagger.hilt.components.SingletonComponent
 object DaoModule {
 
     @Provides
-    fun provideWateringDao(database: BensAppDatabase): PeopleDao = database.peopleDao()
+    fun providePeopleDao(database: BensAppDatabase): PeopleDao = database.peopleDao()
+
+    @Provides
+    fun provideTimesheetDao(database: BensAppDatabase): TimeSheetDao = database.timesheetDao()
 
 }

@@ -1,25 +1,38 @@
 package com.example.bigbenssignin.features.signinSignoutFeature.domain.models
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import kotlinx.serialization.Serializable
 
+@Entity
 @Serializable
-data class timecard_entry(
-    val billable: Boolean,
-    val cost_code_id: Int,
-    val date: String,
-    val datetime: String,
+data class TimeCardEntry(
+    @PrimaryKey(autoGenerate = true) val key:Int = 0,
     val description: String,
     val hours: String,
-    val line_item_type_id: Int,
-    val location_id: Int,
-    val login_information_id: Int,
     val lunch_time: String,
-    val origin_data: String,
-    val origin_id: Int,
     val party_id: Int,
-    val sub_job_id: Int,
     val time_in: String,
     val time_out: String,
-    val timecard_time_type_id: Int,
-    val timesheet_id: Int
 )
+
+
+@Serializable
+data class TimeCardEntryWithoutAutoGenerate(
+    val description: String,
+    val hours: String,
+    val lunch_time: String,
+    val party_id: Int,
+    val time_in: String,
+    val time_out: String,
+)
+fun timecardwithoutprimarykey(timeCardEntry: TimeCardEntry):TimeCardEntryWithoutAutoGenerate{
+    return TimeCardEntryWithoutAutoGenerate(
+        description = timeCardEntry.description,
+        hours = timeCardEntry.hours,
+        lunch_time = timeCardEntry.lunch_time,
+        party_id = timeCardEntry.party_id,
+        time_in = timeCardEntry.time_in,
+        time_out = timeCardEntry.time_out,
+    )
+}
