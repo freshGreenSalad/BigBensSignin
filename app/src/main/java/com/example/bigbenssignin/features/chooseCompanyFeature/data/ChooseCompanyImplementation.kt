@@ -1,6 +1,5 @@
 package com.example.bigbenssignin.features.chooseCompanyFeature.data
 
-import android.util.Log
 import androidx.datastore.core.DataStore
 import com.example.bigbenssignin.common.data.CommonHttpClientFunctionsImp
 import com.example.bigbenssignin.features.chooseCompanyFeature.domain.ChooseCompanyRepositoryInterface
@@ -26,19 +25,16 @@ class ChooseCompanyImplementation @Inject constructor(
     private val commonHttpClientFunctionsImp: CommonHttpClientFunctionsImp
 ): ChooseCompanyRepositoryInterface {
     override suspend fun getListOfCompanies(): SuccessState<List<Companies>> {
+        val httpResponse = httpGetCompaniesList(client)
 
-        val token = datastore.data.map { it.token }.first()
-
-        val httpResponse = getCompaniesList(client, token)
-
-        val response = when(httpResponse.status.value){
+        return when(httpResponse.status.value){
             200 ->{
                 val listCompanies = Json.decodeFromString<List<Companies>>(httpResponse.body())
                 SuccessState.Success(listCompanies)
             }
             401 ->{
                 val response = commonHttpClientFunctionsImp.tokenTimeoutCallBack(
-                    procoreApiFunction = { getCompaniesList(client, token).body() }
+                    procoreApiFunction = { httpGetCompaniesList(client).body() }
                 )
                 val listCompanies = Json.decodeFromString<List<Companies>>(response)
                 SuccessState.Success(listCompanies)
@@ -46,23 +42,19 @@ class ChooseCompanyImplementation @Inject constructor(
             403 ->{SuccessState.Failure("Failed to get list of companies from Procore 403")}
             else ->{SuccessState.Failure("Failed to get list of companies from Procore else")}
         }
-        return response
     }
 
     override suspend fun getListOfProjects(company:String): SuccessState<List<Project>> {
-        val token = datastore.data.map { it.token }.first()
-
         commonHttpClientFunctionsImp.addCompanyToDataStore(company)
+        val httpResponse = httpGetProjectsList(client, company)
 
-        val httpResponse = getProjectsList(client, token, company)
-
-        val response = when (httpResponse.status.value){
+        return when (httpResponse.status.value){
                 200 -> {
                     SuccessState.Success(Json.decodeFromString<List<Project>>(httpResponse.body()))
                 }
                 401 -> {
                     val retry = commonHttpClientFunctionsImp.tokenTimeoutCallBack(
-                        procoreApiFunction = { getProjectsList(client, token, company).body() }
+                        procoreApiFunction = { httpGetProjectsList(client, company).body() }
                     )
                     val jsonClass = Json.decodeFromString<List<Project>>(retry)
                     SuccessState.Success(jsonClass)
@@ -74,28 +66,21 @@ class ChooseCompanyImplementation @Inject constructor(
                 SuccessState.Failure("Failed to get list of Projects from Procore")
             }
         }
-        return response
     }
 
-    override suspend fun addProjectToDataStore(project: String) {
-        commonHttpClientFunctionsImp.addProjectToDataStore(project)
-    }
-
-    private suspend fun getCompaniesList(client: HttpClient, token:String): HttpResponse {
-        val response = client.get(HttpRequestConstants.companyRequest) {
+    private suspend fun httpGetCompaniesList(client: HttpClient): HttpResponse {
+        val token = datastore.data.map { it.token }.first()
+        return client.get(HttpRequestConstants.companyRequest) {
             bearerAuth(token)
             contentType(ContentType.Application.Json)
         }
-
-        return response
     }
 
-    private suspend fun getProjectsList(client: HttpClient, token: String, company:String): HttpResponse {
-
-        val response = client.get(HttpRequestConstants.getCompanyUri(company)) {
+    private suspend fun httpGetProjectsList(client: HttpClient, company:String): HttpResponse {
+        val token = datastore.data.map { it.token }.first()
+        return client.get(HttpRequestConstants.getCompanyUri(company)) {
             bearerAuth(token)
             contentType(ContentType.Application.Json)
         }
-        return response
     }
 }

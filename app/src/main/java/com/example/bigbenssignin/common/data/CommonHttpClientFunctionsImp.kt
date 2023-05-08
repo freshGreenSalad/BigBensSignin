@@ -23,11 +23,10 @@ class CommonHttpClientFunctionsImp @Inject constructor(
     private val client: HttpClient
 ): CommonHttpClientFunctions {
 
-    override suspend fun tokenTimeoutCallBack(procoreApiFunction: suspend (token:String) -> String): String {
+    override suspend fun tokenTimeoutCallBack(procoreApiFunction: suspend () -> String): String {
         val loggedInProfileKeyIdentifiers = dataStore.data.map { it }.first()
         getTokenFromRefreshToken(loggedInProfileKeyIdentifiers)
-        val newToken = dataStore.data.map { it.token }.first()
-        return procoreApiFunction(newToken)
+        return procoreApiFunction()
     }
 
     override suspend fun getTokenFromRefreshToken(loggedInProfileKeyIdentifiers: LoggedInProfileKeyIdentifiers) {
@@ -43,7 +42,6 @@ class CommonHttpClientFunctionsImp @Inject constructor(
             contentType(ContentType.Application.Json)
             setBody(Json.encodeToString(request))
         }.body<ReturnFromRequestForToken>()
-
         addTokenToDataStore(requestForToken)
     }
 

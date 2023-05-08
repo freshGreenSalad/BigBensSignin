@@ -2,6 +2,7 @@ package com.example.bigbenssignin.common.domain.models
 
 object HttpRequestConstants {
     const val procoreBaseUri = "https://sandbox.procore.com"
+    const val customScreen = "$procoreBaseUri/oauth/authorize?"
     const val returnUri = "urn:ietf:wg:oauth:2.0:oob"
     const val tokenRequest = "$procoreBaseUri/oauth/token"
     const val companyRequest = "$procoreBaseUri/rest/v1.0/companies"

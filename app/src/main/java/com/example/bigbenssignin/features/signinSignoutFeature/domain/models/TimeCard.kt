@@ -19,7 +19,7 @@ data class TimeCardEntry(
 
 
 @Serializable
-data class TimeCardEntryWithoutAutoGenerate(
+data class TimeCardEntryNoKey(
     val description: String,
     val hours: String,
     val lunch_time: String,
@@ -28,8 +28,8 @@ data class TimeCardEntryWithoutAutoGenerate(
     val time_out: String,
     val date: String,
 )
-fun timecardwithoutprimarykey(timeCardEntry: TimeCardEntry):TimeCardEntryWithoutAutoGenerate{
-    return TimeCardEntryWithoutAutoGenerate(
+fun timecardNoKey(timeCardEntry: TimeCardEntry):TimeCardEntryNoKey{
+    return TimeCardEntryNoKey(
         description = timeCardEntry.description,
         hours = timeCardEntry.hours,
         lunch_time = timeCardEntry.lunch_time,

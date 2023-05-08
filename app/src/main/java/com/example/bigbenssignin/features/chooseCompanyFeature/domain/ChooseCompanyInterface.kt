@@ -8,6 +8,4 @@ interface ChooseCompanyRepositoryInterface {
     suspend fun getListOfCompanies(): SuccessState<List<Companies>>
 
     suspend fun getListOfProjects(company:String): SuccessState<List<Project>>
-
-    suspend fun addProjectToDataStore(project: String)
 }

@@ -5,8 +5,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.bigbenssignin.common.presentaiton.NavigationDestinations
+import com.example.bigbenssignin.features.signinSignoutFeature.presentation.viewModel.SigninSignoutViewModel
 
-fun NavGraphBuilder.loginLogoutScreen(navController: NavController){
+fun NavGraphBuilder.signinSignoutScreen(navController: NavController){
     composable(NavigationDestinations.LoginLogout){
         val viewModel: SigninSignoutViewModel = hiltViewModel()
         SigninSignoutScreen(

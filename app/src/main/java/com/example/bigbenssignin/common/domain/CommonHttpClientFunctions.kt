@@ -4,7 +4,7 @@ import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentif
 
 interface CommonHttpClientFunctions {
 
-    suspend fun tokenTimeoutCallBack(procoreApiFunction: suspend (newToken:String)-> String):String
+    suspend fun tokenTimeoutCallBack(procoreApiFunction: suspend ()-> String):String
 
     suspend fun getTokenFromRefreshToken(loggedInProfileKeyIdentifiers: LoggedInProfileKeyIdentifiers)
 

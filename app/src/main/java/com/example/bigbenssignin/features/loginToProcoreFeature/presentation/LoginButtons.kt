@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.bigbenssignin.R
 import com.example.bigbenssignin.common.domain.models.ApiKeys
+import com.example.bigbenssignin.common.domain.models.HttpRequestConstants
 
 @Composable
 fun LoginWithTokenUserCollectedFromProcore(sendAuthorisationToProcoreServerForToken: ()->Unit, enableLoginButton: Boolean )
@@ -26,7 +27,7 @@ fun LoginWithTokenUserCollectedFromProcore(sendAuthorisationToProcoreServerForTo
     LoginButton(
         onclick = { sendAuthorisationToProcoreServerForToken()  },
         content = {Text(
-            text = stringResource(R.string.loginToBigBenApp),
+            text = stringResource(R.string.loginToBensApp),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onPrimary
         )},
@@ -37,9 +38,10 @@ fun LoginWithTokenUserCollectedFromProcore(sendAuthorisationToProcoreServerForTo
 @Composable
 fun GotoCustomTabsButton() {
     val context = LocalContext.current
-    val url = "https://sandbox.procore.com/oauth/authorize?response_type=code&client_id=" +
-            ApiKeys().clientId +
-            "&redirect_uri=urn:ietf:wg:oauth:2.0:oob"
+    val url = HttpRequestConstants.customScreen +
+            "response_type=code&" +
+            "client_id=${ApiKeys().clientId}&" +
+            "redirect_uri=${HttpRequestConstants.returnUri}"
     val  builder = CustomTabsIntent.Builder()
     val customTabsIntent = builder.build()
 

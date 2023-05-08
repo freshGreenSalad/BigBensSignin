@@ -1,10 +1,8 @@
 package com.example.bigbenssignin.features.chooseCompanyFeature.presentation
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
@@ -30,7 +28,7 @@ fun NavGraphBuilder.chooseCompanyProject(navController: NavController){
             listCompanies = viewModel.companiesList,
             listProjects = viewModel.projectsList,
             selectCompany = viewModel::choseCompanyProject,
-            successState = viewModel.navigaitonChannel
+            successState = viewModel.uiChannel
         )
     }
 }
@@ -50,7 +48,7 @@ fun ChooseCompany(
         }
     }
 
-    LaunchedEffect(key1 = successState){
+    LaunchedEffect(Unit){
         successState.collect{successFlow ->
             when (successFlow){
                 is SuccessState.Failure -> {
@@ -59,7 +57,6 @@ fun ChooseCompany(
                 is SuccessState.Success -> {
                     navigate()
                 }
-                else -> {}
             }
         }
 

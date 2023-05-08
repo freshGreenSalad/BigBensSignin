@@ -3,11 +3,13 @@ package com.example.bigbenssignin.features.signinSignoutFeature.data
 import android.util.Log
 import androidx.datastore.core.DataStore
 import com.example.bigbenssignin.common.data.CommonHttpClientFunctionsImp
+import com.example.bigbenssignin.common.data.time.AppTimeFormats
 import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentifiers
 import com.example.bigbenssignin.common.data.room.PeopleDao
 import com.example.bigbenssignin.common.data.room.TimeSheetDao
 import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.common.domain.models.HttpRequestConstants
+import com.example.bigbenssignin.features.signinSignoutFeature.domain.SignInSignoutRepository
 import com.example.bigbenssignin.features.signinSignoutFeature.domain.models.*
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -20,24 +22,18 @@ import kotlinx.coroutines.flow.map
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import java.time.*
-import java.time.format.DateTimeFormatter
-import java.time.temporal.ChronoUnit
 import javax.inject.Inject
 
-class signInSignOutRepositoryImp @Inject constructor(
+class SignInSignOutRepositoryImp @Inject constructor(
     private val client: HttpClient,
     private val datastore :DataStore<LoggedInProfileKeyIdentifiers>,
     private val commonHttpClientFunctionsImp: CommonHttpClientFunctionsImp,
     private val peopleDao: PeopleDao,
     private val timeSheetDao: TimeSheetDao
-): signInSignoutRepository {
-    override suspend fun getListofWorkers(): SuccessState<List<People>> {
-        val project = datastore.data.map { it.project }.first()
-        val token = datastore.data.map { it.token }.first()
-
-        val httpResponse = getProjectPeople(project, token)
-
-        val response = when(httpResponse.status.value){
+): SignInSignoutRepository {
+    override suspend fun getListOfWorkers(): SuccessState<List<People>> {
+        val httpResponse = getProjectPeopleHttp()
+        return when(httpResponse.status.value){
             200 ->{
                 SuccessState.Success(
                     Json.decodeFromString<List<People>>(httpResponse.body())
@@ -46,7 +42,7 @@ class signInSignOutRepositoryImp @Inject constructor(
             401 ->{
                 SuccessState.Success(
                     Json.decodeFromString(
-                        commonHttpClientFunctionsImp.tokenTimeoutCallBack {newToken -> getProjectPeople(project, token).body() }
+                        commonHttpClientFunctionsImp.tokenTimeoutCallBack {getProjectPeopleHttp().body() }
                     )
                 )
             }
@@ -57,8 +53,6 @@ class signInSignOutRepositoryImp @Inject constructor(
                 SuccessState.Failure()
             }
         }
-        Log.d("response", response.data.toString())
-        return response
     }
 
     override suspend fun addPersonToRoom(person: People) {
@@ -70,18 +64,11 @@ class signInSignOutRepositoryImp @Inject constructor(
     }
 
     override suspend fun addTimesheetToRoom(person: People) {
-
-        val timein = ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(System.currentTimeMillis()),
-            ZoneId.of("GMT+12")
-        ).truncatedTo(ChronoUnit.SECONDS)
-        val formatedtimeIn = DateTimeFormatter.ISO_INSTANT.format(timein)
-
         val timesheet = TimeCardEntry(
             hours = "7.0",
             lunch_time = "60",
             party_id = person.id?:0,
-            time_in = formatedtimeIn.toString(),
+            time_in = AppTimeFormats().getIsoTime(),
             time_out = "",
             date =  "",
             description = "time sheet from bens signin app",
@@ -89,48 +76,53 @@ class signInSignOutRepositoryImp @Inject constructor(
         timeSheetDao.insertAlltimecard(timesheet)
     }
 
-    override suspend fun signuserOut(person: People) {
-
-        val project = datastore.data.map { it.project }.first()
-
-        val token = datastore.data.map { it.token }.first()
-
-        val timeOut = ZonedDateTime.ofInstant(
-            Instant.ofEpochMilli(System.currentTimeMillis()),
-            ZoneId.of("GMT+12")
-        ).plusHours(1)
-
-        val formatedtimeOut = DateTimeFormatter.ISO_INSTANT.format(timeOut)
-
-        val date = LocalDate.now()
-
-        try {
-            val timesheet = timeSheetDao.getonetimecard(personId = person.id!!)
+    override suspend fun signUserOut(signoutPerson: People):SuccessState<TimeCardEntryNoKey> {
+        return try {
+            val timesheet = timeSheetDao.getonetimecard(personId = signoutPerson.id!!)
+            val generatedTimeSheet = generateTimeSheet(timesheet)
+            sendTimeSheetHttp(generatedTimeSheet.data!!)
             timeSheetDao.deleteTimecard(timesheet)
-            val timeSheetWithoutAutoGenerate = timecardwithoutprimarykey(timesheet)
-            val timeSheetWithTimeOutAndDate = timeSheetWithoutAutoGenerate.copy(time_out = formatedtimeOut, date = date.toString())
-            sendTimeSheetToProcore(timeSheetWithTimeOutAndDate,  project, token)
-            peopleDao.deletePeople(person)
+            peopleDao.deletePeople(signoutPerson)
+            return generatedTimeSheet
         } catch (e:Exception){
             Log.d("",e.toString())
+            SuccessState.Failure("failed to sign user out")
         }
     }
 
-    private suspend fun sendTimeSheetToProcore(timeCardEntry: TimeCardEntryWithoutAutoGenerate, project: String, token:String) {
-        val uri = HttpRequestConstants.getTimeCardEntriesUri(project)
-       client.post(uri) {
+
+
+
+    private fun generateTimeSheet(timesheet: TimeCardEntry):SuccessState<TimeCardEntryNoKey> {
+        val timeSheetNoKey = timecardNoKey(timesheet)
+        val loginGmtTime = AppTimeFormats().convertIsoTimeToZonedTime(timeSheetNoKey.time_in)
+        val currentGmtTime = AppTimeFormats().getGmtTime()
+
+        val roundedTime = AppTimeFormats().roundTimetoquarterHour(currentGmtTime)
+        Log.d("roundedTime", roundedTime.toString())
+
+        return SuccessState.Success(timeSheetNoKey.copy(
+            time_out = AppTimeFormats().isoFormat(roundedTime),
+            date = LocalDate.now().toString()
+        ))
+    }
+
+    private suspend fun sendTimeSheetHttp(timeCardEntry: TimeCardEntryNoKey) {
+        val project = datastore.data.map { it.project }.first()
+        val token = datastore.data.map { it.token }.first()
+       client.post(HttpRequestConstants.getTimeCardEntriesUri(project)) {
             bearerAuth(token)
             setBody(timeCardEntry)
             contentType(ContentType.Application.Json)
         }
     }
 
-    private suspend fun getProjectPeople(project: String, token:String):HttpResponse {
-        val uri = HttpRequestConstants.getProjectPeopleUri(project)
-        val httpResponse = client.get(uri) {
+    private suspend fun getProjectPeopleHttp():HttpResponse {
+        val project = datastore.data.map { it.project }.first()
+        val token = datastore.data.map { it.token }.first()
+        return client.get(HttpRequestConstants.getProjectPeopleUri(project)) {
             bearerAuth(token)
             contentType(ContentType.Application.Json)
         }
-        return httpResponse
     }
 }

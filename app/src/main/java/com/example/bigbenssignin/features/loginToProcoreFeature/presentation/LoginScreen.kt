@@ -10,25 +10,36 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.features.loginToProcoreFeature.presentation.*
+import com.example.bigbenssignin.features.loginToProcoreFeature.presentation.viewmodel.LoginEvents
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 @Composable
 fun LoginToProCore(
     authorisationCode :State<String>,
-    onEventFunction: (OnEventLogin)->Unit,
-    LoginFail : Flow<String>,
+    onEventFunction: (LoginEvents)->Unit,
     navigateToNextScreen: ()-> Unit,
     successState: Flow<SuccessState<Unit>>,
 ) {
-    val scope = rememberCoroutineScope()
     val snackbarState = remember{ SnackbarHostState()}
     NavigateToSelectCompanyOnSuccessState(successState, navigateToNextScreen)
 
-    // TODO: change the below login fail to a wraped class with the error message attached
-    remember {scope.launch{LoginFail.collect{snackbarState.showSnackbar(it)}}}
+    LaunchedEffect(Unit){
+        successState.collect{successFlow ->
+            when (successFlow){
+                is SuccessState.Failure -> {
+                    snackbarState.showSnackbar(successFlow.error?:"alls good")
+                }
+                is SuccessState.Success -> {
+                    navigateToNextScreen()
+                }
+            }
+        }
+    }
+
 
     val enableLoginButton =  remember(key1 = authorisationCode) {
         derivedStateOf {
@@ -49,7 +60,7 @@ fun LoginToProCore(
 fun LoginToProCoreScaffold(
     snackbarState: SnackbarHostState,
     authorisationCode :State<String>,
-    onEventFunction: (OnEventLogin)->Unit,
+    onEventFunction: (LoginEvents)->Unit,
     enableLoginButton: State<Boolean>
 ) {
     Scaffold(
@@ -69,11 +80,11 @@ fun LoginToProCoreScaffold(
             GotoCustomTabsButton()
             Spacer(modifier = Modifier.height(50.dp))
             TokenTextBox(authorisationCode.value) { code ->
-                (onEventFunction)(OnEventLogin.UpdateAuthorisationCode(code))
+                (onEventFunction)(LoginEvents.UpdateAuthorisationCode(code))
             }
             Spacer(modifier = Modifier.height(50.dp))
             LoginWithTokenUserCollectedFromProcore(
-                sendAuthorisationToProcoreServerForToken = { onEventFunction(OnEventLogin.GetToken) },
+                sendAuthorisationToProcoreServerForToken = { onEventFunction(LoginEvents.GetToken) },
                 enableLoginButton = enableLoginButton.value
             )
         }

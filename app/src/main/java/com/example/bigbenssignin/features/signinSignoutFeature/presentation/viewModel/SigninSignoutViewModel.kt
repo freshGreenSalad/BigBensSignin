@@ -1,34 +1,41 @@
-package com.example.bigbenssignin.features.signinSignoutFeature.presentation
+package com.example.bigbenssignin.features.signinSignoutFeature.presentation.viewModel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.dependencyInjection.IoDispatcher
-import com.example.bigbenssignin.features.signinSignoutFeature.data.signInSignOutRepositoryImp
-import com.example.bigbenssignin.features.signinSignoutFeature.domain.models.useCaseWorkersNotYetSignedin
+import com.example.bigbenssignin.features.signinSignoutFeature.data.SignInSignOutRepositoryImp
+import com.example.bigbenssignin.features.signinSignoutFeature.domain.UseCases.UseCaseGetWorkersNotSignedIn
+import com.example.bigbenssignin.features.signinSignoutFeature.domain.models.TimeCardEntryNoKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SigninSignoutViewModel @Inject constructor(
-    private val signInSignOutRepositoryImp: signInSignOutRepositoryImp,
+    private val signInSignOutRepositoryImp: SignInSignOutRepositoryImp,
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
-    private val getWorkersNotSignedIn : useCaseWorkersNotYetSignedin
+    getWorkersNotSignedIn : UseCaseGetWorkersNotSignedIn
 ):ViewModel() {
-    val scope = viewModelScope
+    private val scope = viewModelScope
+
+    private val _eventChannel =  Channel<SuccessState<Unit>>()
+    val eventChannel = _eventChannel.receiveAsFlow()
 
     val listOfPeople = getWorkersNotSignedIn().stateIn(
         initialValue = emptyList(),
-        scope = viewModelScope, //TODO("change to dispatcher")
+        scope = viewModelScope,
         started = WhileSubscribed(5000)
     )
 
     val signedInPeopleFlow = signInSignOutRepositoryImp.getListOfSignedInUsers().stateIn(
             initialValue = emptyList(),
-            scope = viewModelScope, //TODO("change to dispatcher")
+            scope = viewModelScope,
             started = WhileSubscribed(5000)
         )
 
@@ -46,7 +53,10 @@ class SigninSignoutViewModel @Inject constructor(
             }
             is SigninSignoutEvent.Logout -> {
                 scope.launch(dispatcher) {
-                    signInSignOutRepositoryImp.signuserOut(event.person)
+                    val suceessSignout = signInSignOutRepositoryImp.signUserOut(event.person)
+                    if(suceessSignout == SuccessState.Failure<TimeCardEntryNoKey>()){
+                        _eventChannel.send(SuccessState.Failure(suceessSignout.error))
+                    }
                 }
             }
         }

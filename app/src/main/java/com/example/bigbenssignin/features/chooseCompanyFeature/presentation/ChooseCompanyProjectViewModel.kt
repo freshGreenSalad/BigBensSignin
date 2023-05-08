@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.bigbenssignin.common.data.CommonHttpClientFunctionsImp
 import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.features.chooseCompanyFeature.domain.ChooseCompanyRepositoryInterface
 import com.example.bigbenssignin.dependencyInjection.IoDispatcher
@@ -19,14 +20,15 @@ import javax.inject.Inject
 @HiltViewModel
 class ChooseCompanyProjectViewModel @Inject constructor(
     private val choseCompanyProjectRepository: ChooseCompanyRepositoryInterface,
-    @IoDispatcher private val dispatcher: CoroutineDispatcher
+    @IoDispatcher private val dispatcher: CoroutineDispatcher,
+    private val commonHttpClientFunctionsImp: CommonHttpClientFunctionsImp
 ):ViewModel(
 
 ) {
     private val scope = viewModelScope
 
-    private val _navigaitonChannel = Channel<SuccessState<Unit>>()
-    val navigaitonChannel = _navigaitonChannel.receiveAsFlow()
+    private val _uiChannel = Channel<SuccessState<Unit>>()
+    val uiChannel = _uiChannel.receiveAsFlow()
 
     val companiesList = mutableStateOf<List<Companies>>(emptyList())
     val projectsList = mutableStateOf<List<Project>>(emptyList())
@@ -40,8 +42,8 @@ class ChooseCompanyProjectViewModel @Inject constructor(
         when(event){
             is ChooseCompanyProjectEvent.ChooseProject -> {
                 scope.launch(dispatcher) {
-                    choseCompanyProjectRepository.addProjectToDataStore(event.project)
-                    _navigaitonChannel.send(SuccessState.Success<Unit>())
+                    commonHttpClientFunctionsImp.addProjectToDataStore(event.project)
+                    _uiChannel.send(SuccessState.Success<Unit>())
                 }
             }
             is ChooseCompanyProjectEvent.GetListOfProjects -> {
