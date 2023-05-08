@@ -1,6 +1,5 @@
 package com.example.bigbenssignin.common.domain
 
-import android.util.Log
 import com.example.bigbenssignin.common.data.time.AppTimeFormats
 import com.example.bigbenssignin.features.signinSignoutFeature.domain.models.People
 import com.example.bigbenssignin.features.signinSignoutFeature.domain.models.TimeCardEntry
@@ -10,22 +9,18 @@ import java.time.LocalDate
 import javax.inject.Inject
 
 class TimesheetFunctions @Inject constructor(){
+    fun timeSheetToShort(timesheet: TimeCardEntry):Boolean{
+        val currentTime = AppTimeFormats().getTimeRoundedToQuarterHour()
+        val signInTime = AppTimeFormats().toZonedTime(timesheet.time_in)
+        return currentTime.compareTo(signInTime) < 16
+    }
 
-    fun generateTimeSheet(timesheet: TimeCardEntry):SuccessState<TimeCardEntryNoKey> {
-        // throw an error if bad time and catch the specific error
-        // val isToSoonToMakeTimeSheet = CheckIfToEarlyToMakeTimeSheet
-
+    fun generateTimeSheet(timesheet: TimeCardEntry):TimeCardEntryNoKey {
         val timeSheetNoKey = timecardNoKey(timesheet)
-        val loginGmtTime = AppTimeFormats().convertIsoTimeToZonedTime(timeSheetNoKey.time_in)
-        val currentGmtTime = AppTimeFormats().getGmtTime()
-
-        val roundedTime = AppTimeFormats().roundTimetoquarterHour(currentGmtTime)
-        Log.d("roundedTime", roundedTime.toString())
-
-        return SuccessState.Success(timeSheetNoKey.copy(
-            time_out = AppTimeFormats().isoFormat(roundedTime),
+        return timeSheetNoKey.copy(
+            time_out = AppTimeFormats().toIsoFormat(AppTimeFormats().getTimeRoundedToQuarterHour()),
             date = LocalDate.now().toString()
-        ))
+        )
     }
 
     fun generateTimeSheet(person: People): TimeCardEntry{
@@ -33,7 +28,7 @@ class TimesheetFunctions @Inject constructor(){
             hours = "7.0",
             lunch_time = "60",
             party_id = person.id,
-            time_in = AppTimeFormats().getIsoTime(),
+            time_in = AppTimeFormats().toIsoFormat(AppTimeFormats().getTimeRoundedToQuarterHour()),
             time_out = "",
             date =  "",
             description = "time sheet from bens signin app",

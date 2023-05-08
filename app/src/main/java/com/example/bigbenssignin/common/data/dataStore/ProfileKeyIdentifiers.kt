@@ -9,6 +9,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.InputStream
 import java.io.OutputStream
+import javax.inject.Inject
 
 @Serializable
 data class ProfileKeyIdentifiers(
@@ -18,7 +19,7 @@ data class ProfileKeyIdentifiers(
     val project: String = ""
 )
 
-object TokenSerialiser: Serializer<ProfileKeyIdentifiers> {
+object TokenSerialiser: Serializer<ProfileKeyIdentifiers>  {
 
     override val defaultValue: ProfileKeyIdentifiers
         get() = ProfileKeyIdentifiers()

@@ -14,6 +14,6 @@ interface SignInSignoutRepository {
 
     suspend fun addTimesheetToRoom(person: People)
 
-    suspend fun signUserOut(person: People):SuccessState<TimeCardEntryNoKey>
+    suspend fun signUserOut(person: People):SuccessState<Unit>
 
 }

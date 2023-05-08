@@ -18,7 +18,7 @@ import javax.inject.Inject
 class StateViewModel @Inject constructor(
     networkConnectivityObserver: NetworkConnectivityObserver,
     dataStore: DataStore<ProfileKeyIdentifiers>,
-    @IoDispatcher dispatcher: CoroutineDispatcher
+    @IoDispatcher private val dispatcher: CoroutineDispatcher
 ): ViewModel() {
     val scope = viewModelScope
 

@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.bigbenssignin.common.data.CommonHttpClientFunctionsImp
 import com.example.bigbenssignin.common.data.DataStoreFunctions
 import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.features.chooseCompanyFeature.domain.ChooseCompanyRepositoryInterface
@@ -33,7 +32,7 @@ class ChooseCompanyProjectViewModel @Inject constructor(
 
     val companiesList = mutableStateOf<List<Companies>>(emptyList())
     val projectsList = mutableStateOf<List<Project>>(emptyList())
-    val selectedProject = mutableStateOf("")
+    private val selectedProject = mutableStateOf("")
 
     init {
         choseCompanyProject(ChooseCompanyProjectEvent.GetCompanies)
@@ -44,11 +43,11 @@ class ChooseCompanyProjectViewModel @Inject constructor(
             is ChooseCompanyProjectEvent.ChooseProject -> {
                 scope.launch(dispatcher) {
                     dataStoreImp.addProjectToDataStore(event.project)
-                    _uiChannel.send(SuccessState.Success<Unit>())
+                    _uiChannel.send(SuccessState.Success())
                 }
             }
             is ChooseCompanyProjectEvent.GetListOfProjects -> {
-                Log.d("","getlist of projects ")
+                Log.d("","get list of projects ")
                 scope.launch(dispatcher) {
                     selectedProject.value = event.company
                     when(val companiesResult = choseCompanyProjectRepository.getListOfProjects(selectedProject.value)){
@@ -59,7 +58,6 @@ class ChooseCompanyProjectViewModel @Inject constructor(
                         is SuccessState.Success -> {
                             projectsList.value = companiesResult.data ?:  emptyList()
                         }
-                        else -> {}
                     }
                 }
             }
@@ -73,7 +71,6 @@ class ChooseCompanyProjectViewModel @Inject constructor(
                         is SuccessState.Success -> {
                             companiesList.value = companiesResult.data ?:  emptyList()
                         }
-                        else -> {}
                     }
                 }
             }

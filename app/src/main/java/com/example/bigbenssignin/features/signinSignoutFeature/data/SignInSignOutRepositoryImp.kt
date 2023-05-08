@@ -44,24 +44,19 @@ class SignInSignOutRepositoryImp @Inject constructor(
         }
     }
 
-    override suspend fun signUserOut(person: People):SuccessState<TimeCardEntryNoKey> {
-        return try {
+    override suspend fun signUserOut(person: People):SuccessState<Unit> {
+        val timesheet = timeSheetDao.getonetimecard(personId = person.id)
 
-            val timesheet = timeSheetDao.getonetimecard(personId = person.id)
-            val generatedTimeSheet = timesheetFunctions.generateTimeSheet(timesheet)
-            //if fail at this point return
-
-            basicHttpRequests.sendTimeSheetHttp(generatedTimeSheet.data!!) // this should be type cast at this point
-
-            //clean up of signed in user
+        if(timesheetFunctions.timeSheetToShort(timesheet)){
             timeSheetDao.deleteTimecard(timesheet)
             peopleDao.deletePeople(person)
-
-            return generatedTimeSheet
-        } catch (e:Exception){
-            Log.d("",e.toString())
-            SuccessState.Failure("failed to sign user out")
+            return SuccessState.Failure("timesheet to short")
         }
+
+        basicHttpRequests.sendTimeSheetHttp(timesheetFunctions.generateTimeSheet(timesheet))
+        timeSheetDao.deleteTimecard(timesheet)
+        peopleDao.deletePeople(person)
+        return SuccessState.Success()
     }
 
     override suspend fun addPersonToRoom(person: People) {
