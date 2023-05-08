@@ -25,8 +25,6 @@ class AppTimeFormats {
 
     fun toIsoFormat(time:ZonedDateTime):String = DateTimeFormatter.ISO_INSTANT.format(time)
 
-
-
     fun getGmtTime():ZonedDateTime {
         return ZonedDateTime.ofInstant(
             Instant.ofEpochMilli(System.currentTimeMillis()),

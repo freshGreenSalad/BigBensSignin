@@ -3,6 +3,7 @@ package com.example.bigbenssignin.common.data
 import androidx.datastore.core.DataStore
 import com.example.bigbenssignin.common.data.dataStore.ProfileKeyIdentifiers
 import com.example.bigbenssignin.common.domain.models.ReturnFromRequestForToken
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -14,6 +15,11 @@ class DataStoreFunctions @Inject constructor(
     suspend fun getProject():String = dataStore.data.map { it.project }.first()
     suspend fun getCompany():String = dataStore.data.map { it.company }.first()
     suspend fun getRefreshToken():String = dataStore.data.map { it.refreshToken}.first()
+    suspend fun getProfileKeyIdentifiers(): ProfileKeyIdentifiers = dataStore.data.map { it}.first()
+
+    suspend fun deleteAll() = dataStore.updateData { data ->
+        data.copy(token = "", refreshToken = "", company = "", project = "")
+    }
 
     suspend fun addTokenToDataStore(
         token: ReturnFromRequestForToken,
