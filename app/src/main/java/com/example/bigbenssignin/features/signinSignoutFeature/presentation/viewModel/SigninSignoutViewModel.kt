@@ -5,7 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.dependencyInjection.IoDispatcher
 import com.example.bigbenssignin.features.signinSignoutFeature.data.SignInSignOutRepositoryImp
-import com.example.bigbenssignin.features.signinSignoutFeature.domain.UseCases.UseCaseGetWorkersNotSignedIn
+import com.example.bigbenssignin.features.signinSignoutFeature.domain.useCases.UseCaseGetWorkersNotSignedIn
 import com.example.bigbenssignin.features.signinSignoutFeature.domain.models.TimeCardEntryNoKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher

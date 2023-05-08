@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bigbenssignin.common.data.CommonHttpClientFunctionsImp
+import com.example.bigbenssignin.common.data.DataStoreFunctions
 import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.features.chooseCompanyFeature.domain.ChooseCompanyRepositoryInterface
 import com.example.bigbenssignin.dependencyInjection.IoDispatcher
@@ -21,7 +22,7 @@ import javax.inject.Inject
 class ChooseCompanyProjectViewModel @Inject constructor(
     private val choseCompanyProjectRepository: ChooseCompanyRepositoryInterface,
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
-    private val commonHttpClientFunctionsImp: CommonHttpClientFunctionsImp
+    private val dataStoreImp: DataStoreFunctions,
 ):ViewModel(
 
 ) {
@@ -42,7 +43,7 @@ class ChooseCompanyProjectViewModel @Inject constructor(
         when(event){
             is ChooseCompanyProjectEvent.ChooseProject -> {
                 scope.launch(dispatcher) {
-                    commonHttpClientFunctionsImp.addProjectToDataStore(event.project)
+                    dataStoreImp.addProjectToDataStore(event.project)
                     _uiChannel.send(SuccessState.Success<Unit>())
                 }
             }

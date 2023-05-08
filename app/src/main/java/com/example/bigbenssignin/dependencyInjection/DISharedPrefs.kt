@@ -10,7 +10,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import com.example.bigbenssignin.common.data.dataStore.TokenSerialiser
-import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentifiers
+import com.example.bigbenssignin.common.data.dataStore.ProfileKeyIdentifiers
 import dagger.Provides
 
 @Module
@@ -20,7 +20,7 @@ object DISharedPrefs {
 
     @Provides
     @Singleton
-    fun provideProtoDataStore(@ApplicationContext context: Context): DataStore<LoggedInProfileKeyIdentifiers> {
+    fun provideProtoDataStore(@ApplicationContext context: Context): DataStore<ProfileKeyIdentifiers> {
         return DataStoreFactory.create(
             serializer = TokenSerialiser,
             produceFile = {context.dataStoreFile(PROTO_DATASTORE_FILE)},

@@ -1,4 +1,4 @@
-package com.example.bigbenssignin.features.signinSignoutFeature.domain.UseCases
+package com.example.bigbenssignin.features.signinSignoutFeature.domain.useCases
 
 import com.example.bigbenssignin.dependencyInjection.IoDispatcher
 import com.example.bigbenssignin.features.signinSignoutFeature.data.SignInSignOutRepositoryImp

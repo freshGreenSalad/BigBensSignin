@@ -3,13 +3,13 @@ package com.example.bigbenssignin.common.presentaiton
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentifiers
+import com.example.bigbenssignin.common.data.dataStore.ProfileKeyIdentifiers
 import com.example.bigbenssignin.features.chooseCompanyFeature.presentation.chooseCompanyProject
 import com.example.bigbenssignin.features.loginToProcoreFeature.presentation.loginScreen
 import com.example.bigbenssignin.features.signinSignoutFeature.presentation.signinSignoutScreen
 
 @Composable
-fun Navigation(loggedInProfileKeyIdentifiers: LoggedInProfileKeyIdentifiers) {
+fun Navigation(loggedInProfileKeyIdentifiers: ProfileKeyIdentifiers) {
     val navController = rememberNavController()
 
     val destination = chooseDestinationBasedOnInformationAboutAccount(loggedInProfileKeyIdentifiers)
@@ -24,7 +24,7 @@ fun Navigation(loggedInProfileKeyIdentifiers: LoggedInProfileKeyIdentifiers) {
     }
 }
 
-private fun chooseDestinationBasedOnInformationAboutAccount(loggedInProfileKeyIdentifiers: LoggedInProfileKeyIdentifiers):String{
+private fun chooseDestinationBasedOnInformationAboutAccount(loggedInProfileKeyIdentifiers: ProfileKeyIdentifiers):String{
     return when {
         loggedInProfileKeyIdentifiers.token.isEmpty() -> {
             NavigationDestinations.loginRoute

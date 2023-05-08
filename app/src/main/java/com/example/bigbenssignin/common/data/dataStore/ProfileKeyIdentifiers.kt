@@ -11,19 +11,19 @@ import java.io.InputStream
 import java.io.OutputStream
 
 @Serializable
-data class LoggedInProfileKeyIdentifiers(
+data class ProfileKeyIdentifiers(
     val token:String = "",
     val refreshToken: String = "",
     val company: String = "",
     val project: String = ""
 )
 
-object TokenSerialiser: Serializer<LoggedInProfileKeyIdentifiers> {
+object TokenSerialiser: Serializer<ProfileKeyIdentifiers> {
 
-    override val defaultValue: LoggedInProfileKeyIdentifiers
-        get() = LoggedInProfileKeyIdentifiers()
+    override val defaultValue: ProfileKeyIdentifiers
+        get() = ProfileKeyIdentifiers()
 
-    override suspend fun readFrom(input: InputStream): LoggedInProfileKeyIdentifiers {
+    override suspend fun readFrom(input: InputStream): ProfileKeyIdentifiers {
         return try {
             Json.decodeFromString(input.readBytes().decodeToString())
         }catch (e: Exception){
@@ -31,7 +31,7 @@ object TokenSerialiser: Serializer<LoggedInProfileKeyIdentifiers> {
         }
     }
 
-    override suspend fun writeTo(t: LoggedInProfileKeyIdentifiers, output: OutputStream) { //this is named t as that is what it is named in the superclass
+    override suspend fun writeTo(t: ProfileKeyIdentifiers, output: OutputStream) { //this is named t as that is what it is named in the superclass
         withContext(Dispatchers.IO) {// TODO: hardcoded dispatcher
             output.write(
                 Json.encodeToString(t).encodeToByteArray()

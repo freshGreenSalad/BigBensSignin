@@ -4,7 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bigbenssignin.app.internetConnection.NetworkConnectivityObserver
-import com.example.bigbenssignin.common.data.dataStore.LoggedInProfileKeyIdentifiers
+import com.example.bigbenssignin.common.data.dataStore.ProfileKeyIdentifiers
 import com.example.bigbenssignin.dependencyInjection.IoDispatcher
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,12 +17,12 @@ import javax.inject.Inject
 @HiltViewModel
 class StateViewModel @Inject constructor(
     networkConnectivityObserver: NetworkConnectivityObserver,
-    dataStore: DataStore<LoggedInProfileKeyIdentifiers>,
+    dataStore: DataStore<ProfileKeyIdentifiers>,
     @IoDispatcher dispatcher: CoroutineDispatcher
 ): ViewModel() {
     val scope = viewModelScope
 
-    private val _tokenAndRefreshToken = MutableStateFlow(LoggedInProfileKeyIdentifiers())
+    private val _tokenAndRefreshToken = MutableStateFlow(ProfileKeyIdentifiers())
     val tokenAndRefreshToken = _tokenAndRefreshToken
 
     init {
