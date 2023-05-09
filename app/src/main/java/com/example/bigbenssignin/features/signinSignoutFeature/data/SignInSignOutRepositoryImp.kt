@@ -1,6 +1,5 @@
 package com.example.bigbenssignin.features.signinSignoutFeature.data
 
-import android.util.Log
 import com.example.bigbenssignin.common.data.BasicHttpReqests
 import com.example.bigbenssignin.common.data.room.PeopleDao
 import com.example.bigbenssignin.common.data.room.TimeSheetDao
@@ -45,7 +44,7 @@ class SignInSignOutRepositoryImp @Inject constructor(
     }
 
     override suspend fun signUserOut(person: People):SuccessState<Unit> {
-        val timesheet = timeSheetDao.getonetimecard(personId = person.id)
+        val timesheet = timeSheetDao.getOneTimecard(personId = person.id)
 
         if(timesheetFunctions.timeSheetToShort(timesheet)){
             timeSheetDao.deleteTimecard(timesheet)
@@ -68,6 +67,6 @@ class SignInSignOutRepositoryImp @Inject constructor(
     }
 
     override suspend fun addTimesheetToRoom(person: People) {
-        timeSheetDao.insertAlltimecard(timesheetFunctions.generateTimeSheet(person))
+        timeSheetDao.insertAllTimecard(timesheetFunctions.generateTimeSheet(person))
     }
 }

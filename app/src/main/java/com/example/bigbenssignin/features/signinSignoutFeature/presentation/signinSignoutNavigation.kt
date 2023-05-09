@@ -8,7 +8,7 @@ import com.example.bigbenssignin.common.presentaiton.NavigationDestinations
 import com.example.bigbenssignin.features.signinSignoutFeature.presentation.viewModel.SigninSignoutViewModel
 
 fun NavGraphBuilder.signinSignoutScreen(navController: NavController){
-    composable(NavigationDestinations.LoginLogout){
+    composable(NavigationDestinations.SigninSignout){
         val viewModel: SigninSignoutViewModel = hiltViewModel()
         SigninSignoutScreen(
             listPeople = viewModel.listOfPeople,

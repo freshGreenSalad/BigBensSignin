@@ -17,14 +17,14 @@ class UseCaseGetWorkersNotSignedIn @Inject constructor(
             CoroutineName("Sample CN") + SupervisorJob() + dispatcher
         ) {
                 val listOfWorkersFromProcore = signInSignOutRepositoryImp.getListOfWorkers().data ?: emptyList()
-                val listOfWorkersSavedInRoom = signInSignOutRepositoryImp.getListOfSignedInUsers().map { signedInPeople ->
+                val listOfWorkersNotSavedInRoom = signInSignOutRepositoryImp.getListOfSignedInUsers().map { signedInPeople ->
                         val workersNotInRoom = mutableListOf<People>()
                         for (person in listOfWorkersFromProcore) {
                             if (person !in signedInPeople) {workersNotInRoom.add(person)}
                         }
                         workersNotInRoom
                     }
-            listOfWorkersSavedInRoom
+            listOfWorkersNotSavedInRoom
         }
     }
 }

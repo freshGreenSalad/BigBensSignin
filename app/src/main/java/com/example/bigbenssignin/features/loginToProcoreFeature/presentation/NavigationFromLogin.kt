@@ -16,7 +16,7 @@ fun NavGraphBuilder.loginScreen(navController: NavController){
         LoginToProCore(
             authorisationCode = viewModel.authorisationCode,
             onEventFunction = viewModel::onEvent ,
-            navigateToNextScreen =  {navController.navigate(NavigationDestinations.SelectCompany){
+            navigateToNextScreen =  {navController.navigate(NavigationDestinations.LoggedInSubGraph){
                 popUpTo(NavigationDestinations.loginRoute){inclusive = true}
             } },
             viewModel.eventChannel
@@ -24,7 +24,3 @@ fun NavGraphBuilder.loginScreen(navController: NavController){
     }
 }
 
-@Composable
-fun NavigateToSelectCompanyOnSuccessState(successState: Flow<SuccessState<Unit>>, navigateToNextScreen: ()-> Unit) {
-
-}

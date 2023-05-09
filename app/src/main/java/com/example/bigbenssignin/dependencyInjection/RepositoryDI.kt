@@ -4,6 +4,8 @@ import com.example.bigbenssignin.features.chooseCompanyFeature.data.ChooseCompan
 import com.example.bigbenssignin.features.chooseCompanyFeature.domain.ChooseCompanyRepositoryInterface
 import com.example.bigbenssignin.features.loginToProcoreFeature.domain.SigninInterface
 import com.example.bigbenssignin.features.loginToProcoreFeature.data.SigninRepository
+import com.example.bigbenssignin.features.scaffoldDrawer.data.ScaffoldDrawerRepoImp
+import com.example.bigbenssignin.features.scaffoldDrawer.domain.ScaffoldDrawerRepo
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -18,5 +20,8 @@ interface RepositoryDI {
 
     @Binds
     fun provideChooseCompanyProjectRepository(signinRepo: ChooseCompanyImplementation): ChooseCompanyRepositoryInterface
+
+    @Binds
+    fun provideScaffoldDrawerRepository(scaffoldDrawerRepoImp: ScaffoldDrawerRepoImp): ScaffoldDrawerRepo
 
 }

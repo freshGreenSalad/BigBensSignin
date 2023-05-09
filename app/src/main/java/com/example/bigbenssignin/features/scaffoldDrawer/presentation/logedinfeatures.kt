@@ -24,7 +24,7 @@ fun HomeNavGraph(navController: NavHostController, loggedInProfileKeyIdentifiers
 private fun chooseDestinationBasedOnInformationAboutAccount(loggedInProfileKeyIdentifiers: ProfileKeyIdentifiers):String{
     return when {
         loggedInProfileKeyIdentifiers.token.isEmpty() -> {
-            NavigationDestinations.loginRoute
+            NavigationDestinations.SelectCompany
         }
         loggedInProfileKeyIdentifiers.company.isEmpty() -> {
             NavigationDestinations.SelectCompany
@@ -33,7 +33,7 @@ private fun chooseDestinationBasedOnInformationAboutAccount(loggedInProfileKeyId
             NavigationDestinations.SelectCompany
         }
         else -> {
-            NavigationDestinations.LoginLogout
+            NavigationDestinations.SigninSignout
         }
     }
 }

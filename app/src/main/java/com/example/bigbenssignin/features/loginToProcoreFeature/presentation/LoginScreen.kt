@@ -25,7 +25,6 @@ fun LoginToProCore(
     successState: Flow<SuccessState<Unit>>,
 ) {
     val snackbarState = remember{ SnackbarHostState()}
-    NavigateToSelectCompanyOnSuccessState(successState, navigateToNextScreen)
 
     LaunchedEffect(Unit){
         successState.collect{successFlow ->

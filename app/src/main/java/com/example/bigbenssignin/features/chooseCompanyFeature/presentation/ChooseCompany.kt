@@ -24,7 +24,7 @@ fun NavGraphBuilder.chooseCompanyProject(navController: NavController){
     composable(NavigationDestinations.SelectCompany) {
         val viewModel: ChooseCompanyProjectViewModel = hiltViewModel()
         ChooseCompany(
-            navigate = {navController.navigate(NavigationDestinations.LoginLogout)},
+            navigate = {navController.navigate(NavigationDestinations.SigninSignout)},
             listCompanies = viewModel.companiesList,
             listProjects = viewModel.projectsList,
             selectCompany = viewModel::choseCompanyProject,

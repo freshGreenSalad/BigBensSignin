@@ -7,7 +7,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun bendrawer(drawerState:DrawerState, content : @Composable () -> Unit) {
+fun BenDrawer(drawerState:DrawerState,navigateToLoginPage: ()-> Unit, navigateToCompanyProject: ()-> Unit, submitAllTimeSheets: () -> Unit, content : @Composable () -> Unit, ) {
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(drawerState = drawerState,
         drawerContent = {
@@ -15,11 +15,29 @@ fun bendrawer(drawerState:DrawerState, content : @Composable () -> Unit) {
                 NavigationDrawerItem(
                     label = { Text("logout") } ,
                     selected = false,
-                    onClick = { scope.launch {
-                    drawerState.close() }
-                    })
-                NavigationDrawerItem(label =  { Text("settings") } , selected = false, onClick = { scope.launch {  drawerState.close()} })
-                NavigationDrawerItem(label =  { Text("submit daily timesheets") } , selected = false, onClick = { scope.launch {  drawerState.close()} })
+                    onClick = {
+                        scope.launch {
+                            navigateToLoginPage()
+                            drawerState.close()
+                        }
+                    }
+                )
+
+                NavigationDrawerItem(
+                    label =  { Text("change company project") } ,
+                    selected = false,
+                    onClick = {
+                        scope.launch {
+                            navigateToCompanyProject()
+                            drawerState.close()
+                        }
+                    }
+                )
+
+                NavigationDrawerItem(label =  { Text("submit daily timesheets") } , selected = false, onClick = { scope.launch {
+                    submitAllTimeSheets()
+                    drawerState.close()
+                } })
             }
         }
     ) {

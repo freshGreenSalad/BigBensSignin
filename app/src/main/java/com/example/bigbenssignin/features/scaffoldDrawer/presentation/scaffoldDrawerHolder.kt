@@ -1,4 +1,4 @@
-package com.example.bigbenssignin
+package com.example.bigbenssignin.features.scaffoldDrawer.presentation
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -14,27 +14,45 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.bigbenssignin.BenDrawer
+import com.example.bigbenssignin.R
 import com.example.bigbenssignin.common.data.dataStore.ProfileKeyIdentifiers
-import com.example.bigbenssignin.features.scaffoldDrawer.presentation.HomeNavGraph
+import com.example.bigbenssignin.common.presentaiton.NavigationDestinations
 import com.example.bigbenssignin.features.scaffoldDrawer.presentation.viewModel.DrawerScaffoldViewModel
-import kotlinx.coroutines.flow.Flow
+import com.example.bigbenssignin.features.scaffoldDrawer.presentation.viewModel.OnEventScaffoldViewModel
 import kotlinx.coroutines.launch
 
-fun NavGraphBuilder.homeSubGraph(){
-    composable(route = "Graph.HOME") {
-    val viewModel = hiltViewModel<DrawerScaffoldViewModel>()
-        home(profileKeyIdentifiers = viewModel.keyLoginData.collectAsState().value)
+fun NavGraphBuilder.homeSubGraph( navigateToLoginPage: ()-> Unit){
+    composable(route = NavigationDestinations.LoggedInSubGraph) {
+        val viewModel = hiltViewModel<DrawerScaffoldViewModel>()
+        ScaffoldDrawerHolder(
+            profileKeyIdentifiers = viewModel.keyLoginData.collectAsState().value,
+            navigateToLoginPage = {
+                (viewModel::onEvent)(OnEventScaffoldViewModel.DeleteEverythingDatastore)
+                navigateToLoginPage()
+            },
+            submitAllTimeSheets = { (viewModel::onEvent)(OnEventScaffoldViewModel.SubmitAllTimeSheets) }
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun home(navController: NavHostController = rememberNavController(), profileKeyIdentifiers: ProfileKeyIdentifiers) {
-
+fun ScaffoldDrawerHolder(
+    navController: NavHostController = rememberNavController(),
+    profileKeyIdentifiers: ProfileKeyIdentifiers,
+    navigateToLoginPage: ()-> Unit,
+    submitAllTimeSheets: () -> Unit
+) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    bendrawer(drawerState){
+    BenDrawer(
+        drawerState = drawerState,
+        navigateToLoginPage = navigateToLoginPage,
+        navigateToCompanyProject = { navController.navigate(NavigationDestinations.SelectCompany) },
+        submitAllTimeSheets = submitAllTimeSheets
+    ){
         Scaffold(topBar = {
             benTopBar("title") {
                 scope.launch {

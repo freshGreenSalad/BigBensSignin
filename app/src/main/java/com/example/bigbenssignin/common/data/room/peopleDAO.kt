@@ -12,6 +12,9 @@ interface PeopleDao {
     @Query("SELECT * FROM People")
     fun getall(): Flow<List<People>>
 
+    @Query("SELECT * FROM People WHERE id like :partyId")
+    fun getPersonById(partyId:Int): People
+
     @Update
     fun updatePeople (vararg: People)
 
