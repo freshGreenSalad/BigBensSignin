@@ -1,12 +1,12 @@
 package com.example.bigbenssignin.features.signinSignoutFeature.presentation.viewModel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.dependencyInjection.IoDispatcher
 import com.example.bigbenssignin.features.signinSignoutFeature.data.SignInSignOutRepositoryImp
 import com.example.bigbenssignin.features.signinSignoutFeature.domain.useCases.UseCaseGetWorkersNotSignedIn
-import com.example.bigbenssignin.features.signinSignoutFeature.domain.models.TimeCardEntryNoKey
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
@@ -53,9 +53,14 @@ class SigninSignoutViewModel @Inject constructor(
             }
             is SigninSignoutEvent.Logout -> {
                 scope.launch(dispatcher) {
-                    val suceessSignout = signInSignOutRepositoryImp.signUserOut(event.person)
-                    if(suceessSignout == SuccessState.Failure<TimeCardEntryNoKey>()){
-                        _eventChannel.send(SuccessState.Failure(suceessSignout.error))
+                    val successSignout = signInSignOutRepositoryImp.signUserOut(event.person)
+                   when (successSignout){
+                        is SuccessState.Failure -> {
+                            _eventChannel.send(SuccessState.Failure(successSignout.error ?: "error Signing out user"))
+                        }
+                        is SuccessState.Success -> {
+                            _eventChannel.send(SuccessState.Failure(successSignout.data))
+                        }
                     }
                 }
             }

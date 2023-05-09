@@ -1,5 +1,6 @@
 package com.example.bigbenssignin.features.scaffoldDrawer.presentation
 
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -9,7 +10,7 @@ import com.example.bigbenssignin.features.chooseCompanyFeature.presentation.choo
 import com.example.bigbenssignin.features.signinSignoutFeature.presentation.signinSignoutScreen
 
 @Composable
-fun HomeNavGraph(navController: NavHostController, loggedInProfileKeyIdentifiers: ProfileKeyIdentifiers) {
+fun HomeNavGraph(navController: NavHostController, loggedInProfileKeyIdentifiers: ProfileKeyIdentifiers, snackbarState: SnackbarHostState) {
     val destination = chooseDestinationBasedOnInformationAboutAccount(loggedInProfileKeyIdentifiers)
     NavHost(
         navController = navController,
@@ -17,7 +18,7 @@ fun HomeNavGraph(navController: NavHostController, loggedInProfileKeyIdentifiers
         startDestination = destination
     ) {
         chooseCompanyProject(navController)
-        signinSignoutScreen(navController)
+        signinSignoutScreen(navController,snackbarState)
     }
 }
 

@@ -1,5 +1,6 @@
 package com.example.bigbenssignin.features.signinSignoutFeature.data
 
+import android.util.Log
 import com.example.bigbenssignin.common.data.BasicHttpReqests
 import com.example.bigbenssignin.common.data.room.PeopleDao
 import com.example.bigbenssignin.common.data.room.TimeSheetDao
@@ -43,19 +44,19 @@ class SignInSignOutRepositoryImp @Inject constructor(
         }
     }
 
-    override suspend fun signUserOut(person: People):SuccessState<Unit> {
+    override suspend fun signUserOut(person: People):SuccessState<String> {
         val timesheet = timeSheetDao.getOneTimecard(personId = person.id)
 
         if(timesheetFunctions.timeSheetToShort(timesheet)){
             timeSheetDao.deleteTimecard(timesheet)
             peopleDao.deletePeople(person)
-            return SuccessState.Failure("timesheet to short")
+            return SuccessState.Failure("${person.name}'s timesheet was to short, it has not been added to procore")
         }
 
         basicHttpRequests.sendTimeSheetHttp(timesheetFunctions.generateTimeSheet(timesheet))
         timeSheetDao.deleteTimecard(timesheet)
         peopleDao.deletePeople(person)
-        return SuccessState.Success()
+        return SuccessState.Success("successfully added ${person.name}'s timesheet to procore")
     }
 
     override suspend fun addPersonToRoom(person: People) {

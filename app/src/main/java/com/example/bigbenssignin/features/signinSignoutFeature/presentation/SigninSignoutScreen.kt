@@ -1,19 +1,18 @@
 package com.example.bigbenssignin.features.signinSignoutFeature.presentation
 
+import android.util.Log
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.bigbenssignin.common.domain.SuccessState
 import com.example.bigbenssignin.features.signinSignoutFeature.domain.models.People
 import com.example.bigbenssignin.features.signinSignoutFeature.presentation.viewModel.SigninSignoutEvent
 import kotlinx.coroutines.flow.Flow
@@ -22,8 +21,22 @@ import kotlinx.coroutines.flow.Flow
 fun SigninSignoutScreen(
     listPeople: Flow<List<People>>,
     addToRoom:(SigninSignoutEvent)-> Unit,
-    signedinWorkerList:Flow<List<People>>
+    signedInWorkerList:Flow<List<People>>,
+    snackbarState: SnackbarHostState,
+    successState: Flow<SuccessState<Unit>>,
 ) {
+
+    LaunchedEffect(Unit){
+        successState.collect{successFlow ->
+            when (successFlow){
+                is SuccessState.Failure -> {
+                    snackbarState.showSnackbar(successFlow.error?:"alls good")
+                }
+                is SuccessState.Success -> {}
+            }
+        }
+    }
+
     val selectedTabIndex = remember { mutableStateOf(0) }
     Column(Modifier.fillMaxSize()) {
         TabRow(selectedTabIndex = selectedTabIndex.value) {
@@ -45,7 +58,7 @@ fun SigninSignoutScreen(
         Crossfade(targetState = selectedTabIndex.value) {index ->
             when(index){
                 0 -> {LazyListOfPeople(listPeople,addToRoom)}
-                1 -> {LazyListOfSignedInUsers(signedinWorkerList,addToRoom) }
+                1 -> {LazyListOfSignedInUsers(signedInWorkerList,addToRoom) }
             }
         }
 

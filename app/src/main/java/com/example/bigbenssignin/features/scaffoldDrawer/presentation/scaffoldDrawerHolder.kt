@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -46,6 +47,7 @@ fun ScaffoldDrawerHolder(
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val snackbarState = remember{ SnackbarHostState()}
 
     BenDrawer(
         drawerState = drawerState,
@@ -59,9 +61,11 @@ fun ScaffoldDrawerHolder(
                     drawerState.open()
                 }
             }
-        }) {
+        },
+        snackbarHost = {SnackbarHost(hostState = snackbarState)}
+            ) {
             Box(Modifier.padding(it)) {
-                HomeNavGraph(navController, profileKeyIdentifiers)
+                HomeNavGraph(navController, profileKeyIdentifiers,snackbarState)
             }
         }
     }
