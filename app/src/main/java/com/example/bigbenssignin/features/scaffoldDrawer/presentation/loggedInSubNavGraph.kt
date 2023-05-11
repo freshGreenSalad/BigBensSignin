@@ -10,11 +10,11 @@ import com.example.bigbenssignin.features.chooseCompanyFeature.presentation.choo
 import com.example.bigbenssignin.features.signinSignoutFeature.presentation.signinSignoutScreen
 
 @Composable
-fun HomeNavGraph(navController: NavHostController, loggedInProfileKeyIdentifiers: ProfileKeyIdentifiers, snackbarState: SnackbarHostState) {
+fun LoggedInSubNavGraph(navController: NavHostController, loggedInProfileKeyIdentifiers: ProfileKeyIdentifiers, snackbarState: SnackbarHostState) {
     val destination = chooseDestinationBasedOnInformationAboutAccount(loggedInProfileKeyIdentifiers)
     NavHost(
         navController = navController,
-        route = "Graph.HOME",
+        route = NavigationDestinations.LoggedInSubGraph,
         startDestination = destination
     ) {
         chooseCompanyProject(navController)
@@ -23,18 +23,7 @@ fun HomeNavGraph(navController: NavHostController, loggedInProfileKeyIdentifiers
 }
 
 private fun chooseDestinationBasedOnInformationAboutAccount(loggedInProfileKeyIdentifiers: ProfileKeyIdentifiers):String{
-    return when {
-        loggedInProfileKeyIdentifiers.token.isEmpty() -> {
-            NavigationDestinations.SelectCompany
-        }
-        loggedInProfileKeyIdentifiers.company.isEmpty() -> {
-            NavigationDestinations.SelectCompany
-        }
-        loggedInProfileKeyIdentifiers.project.isEmpty() -> {
-            NavigationDestinations.SelectCompany
-        }
-        else -> {
-            NavigationDestinations.SigninSignout
-        }
-    }
+    return if(loggedInProfileKeyIdentifiers.company.isEmpty()){
+        NavigationDestinations.SelectCompany
+    }else{NavigationDestinations.SigninSignout}
 }

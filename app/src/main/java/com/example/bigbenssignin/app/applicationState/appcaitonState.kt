@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.bigbenssignin.app.internetConnection.ConnectivityObserver
-import com.example.bigbenssignin.common.presentaiton.Navigation
+import com.example.bigbenssignin.common.presentaiton.TopNavigationComposable
 
 @Composable
 fun ApplicationState(
@@ -22,7 +22,7 @@ fun ApplicationState(
     Crossfade(targetState = networkState.value, animationSpec = tween(1000)) { networkStateAnim ->
         when (networkStateAnim){
             ConnectivityObserver.Status.Available -> {
-                Navigation(viewModel.tokenAndRefreshToken.collectAsState().value)
+                TopNavigationComposable(viewModel.tokenAndRefreshToken.collectAsState().value)
             }
             ConnectivityObserver.Status.Unavailable -> {
                 NetworkLoading()

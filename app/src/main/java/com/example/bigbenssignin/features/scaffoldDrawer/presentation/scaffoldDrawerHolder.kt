@@ -1,8 +1,8 @@
 package com.example.bigbenssignin.features.scaffoldDrawer.presentation
 
+import android.util.Log
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -11,6 +11,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.bigbenssignin.R
 import com.example.bigbenssignin.common.data.dataStore.ProfileKeyIdentifiers
@@ -21,9 +22,10 @@ import com.example.bigbenssignin.features.scaffoldDrawer.presentation.viewModel.
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
-fun NavGraphBuilder.homeSubGraph( navigateToLoginPage: ()-> Unit){
+fun NavGraphBuilder.loggedInSubGraph(navigateToLoginPage: ()-> Unit){
     composable(route = NavigationDestinations.LoggedInSubGraph) {
         val viewModel = hiltViewModel<DrawerScaffoldViewModel>()
+
         ScaffoldDrawerHolder(
             profileKeyIdentifiers = viewModel.keyLoginData.collectAsState().value,
             navigateToLoginPage = {
@@ -33,6 +35,7 @@ fun NavGraphBuilder.homeSubGraph( navigateToLoginPage: ()-> Unit){
             submitAllTimeSheets = { (viewModel::onEvent)(OnEventScaffoldViewModel.SubmitAllTimeSheets) },
             successState = viewModel.channel
         )
+
     }
 }
 
@@ -60,6 +63,8 @@ fun ScaffoldDrawerHolder(
         }
     }
 
+    val title = navController.currentBackStackEntryAsState().value?.destination?.route.toString()
+
     BenDrawer(
         drawerState = drawerState,
         navigateToLoginPage = navigateToLoginPage,
@@ -67,7 +72,7 @@ fun ScaffoldDrawerHolder(
         submitAllTimeSheets = submitAllTimeSheets
     ){
         Scaffold(topBar = {
-            benTopBar("title") {
+            benTopBar(title) {
                 scope.launch {
                     drawerState.open()
                 }
@@ -76,7 +81,7 @@ fun ScaffoldDrawerHolder(
         snackbarHost = {SnackbarHost(hostState = snackbarState)}
             ) {
             Box(Modifier.padding(it)) {
-                HomeNavGraph(navController, profileKeyIdentifiers,snackbarState)
+                LoggedInSubNavGraph(navController, profileKeyIdentifiers,snackbarState)
             }
         }
     }
@@ -86,7 +91,8 @@ fun ScaffoldDrawerHolder(
 @Composable
 fun benTopBar(title:String, onClick: ()-> Unit) {
     TopAppBar(
-        title = {Text(title)},
+        title = {
+            Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()){Text(title)}},
         navigationIcon = { Icon(
             modifier = Modifier.clickable { onClick() },
             painter = painterResource(id = R.drawable.menu),
